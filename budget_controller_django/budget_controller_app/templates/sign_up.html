@@ -1,0 +1,21 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up User</title>
+    <link rel="stylesheet" href="{% static 'budget_controller_app/css/sign_up_style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <h2>Sign Up User</h2>
+    <form method="post" action="sign_up.html">
+        {% csrf_token %}
+        <p>Name: <br><input type="text" name="name" /></p>
+        <p>Phone Number: <br><input type="number" name="phone_number"></p>
+        <p>Password: <br><input type="text" name="password"></p>
+        <input type="submit" value="Send">
+    </form>
+</body>
+</html>

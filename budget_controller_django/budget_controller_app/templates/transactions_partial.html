@@ -1,0 +1,18 @@
+<!-- transactions_partial.html -->
+{% for transaction in filter_res %}
+<tr>
+    <td>{{ transaction.date }}</td>
+    <td>{{ transaction.amount }}</td>
+    <td>
+        {% if transaction.type %}
+            Доход
+        {% else %}
+            Расход
+        {% endif %}
+    </td>
+    <td>{{ transaction.category.name }}</td>
+    <td>{{ transaction.description }}</td>
+</tr>
+{% empty %}
+    <tr><td colspan="5">Нет доступных транзакций.</td></tr>
+{% endfor %}
