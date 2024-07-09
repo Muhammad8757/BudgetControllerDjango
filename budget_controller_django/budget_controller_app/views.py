@@ -34,6 +34,11 @@ def get_history(request):
     password_session = request.session['password']
     user = User.objects.get(phone_number=phone_number_session, password=password_session)
     history = UserTransaction.objects.filter(user=user).order_by('-date')
+    for result in history:
+        if result.category:
+            print(result.category.name)
+        else:
+            print("Category is None for this transaction")
     context = {
         'history': history,
     }
@@ -41,8 +46,15 @@ def get_history(request):
 
 def add_income(request):
     if 'phone_number' in request.session and 'password' in request.session:
-        date = request.POST.get("data", 0)
-        amount = request.POST.get("amount", 0)
+        amount_str = request.POST.get("amount", "")
+        if amount_str:
+            try:
+                amount = float(amount_str)
+            except ValueError:
+                # обработка ошибки, если значение не может быть преобразовано в float
+                amount = 0.0  # или другое значение по умолчанию
+        else:
+            amount = 0.0  # или другое значение по умолчанию, если amount_str пустая строка
         description = request.POST.get("description", None)
         category_id = request.POST.get("category", None)
         phone_number_session = request.session['phone_number']
@@ -77,8 +89,7 @@ def add_income(request):
 def add_expense(request):
     if request.method == "POST":
         if 'phone_number' in request.session and 'password' in request.session:
-            date = request.POST.get("data", 0)
-            amount = request.POST.get("amount", 0)
+            amount = float(request.POST.get("amount", 0))
             description = request.POST.get("description", None)
             category_id = request.POST.get("category", None)
             phone_number_session = request.session['phone_number']
@@ -113,6 +124,10 @@ def add_expense(request):
 
 def filter_by_category(request):
     choosen_category = request.GET.get("category", None)
+    if choosen_category is not None:
+        choosen_category = int(choosen_category)
+    else:
+        choosen_category = None
     phone_number_session = request.session.get('phone_number')
     password_session = request.session.get('password')
 
@@ -126,9 +141,15 @@ def filter_by_category(request):
 
     filter_by_category_result = UserTransaction.objects.filter(user=user, category_id=choosen_category)
     print(f"Found transactions: {filter_by_category_result.count()}") 
-
+    for result in filter_by_category_result:
+        if result.category:
+            print(result.category.name)
+        else:
+            print("Category is None for this transaction")
     context = {
         'filter_res': filter_by_category_result,
     }
 
     return render(request, 'transactions_partial.html', context)
+
+    # return render(request, 'transactions_partial.html', context)

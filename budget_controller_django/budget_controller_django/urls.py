@@ -9,5 +9,4 @@ urlpatterns = [
     path("index.html", views.get_history),
     path('get_history/', views.get_history, name='get_history'),
     path("transactions_partial.html",views.filter_by_category, name='filter_by_category'),
-
 ]

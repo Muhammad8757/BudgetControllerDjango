@@ -12,7 +12,7 @@ class Category(models.Model):
 
 
 class UserTransaction(models.Model):
-    amount = models.IntegerField()
+    amount = models.FloatField()
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
     date = models.DateTimeField()
     description = models.CharField(max_length=150, null=True, blank=True)

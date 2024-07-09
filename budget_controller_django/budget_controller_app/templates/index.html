@@ -108,17 +108,20 @@
     </div>
   </div>
 
+  
 
-    <div class="right-panel">
-      <h4>Категории</h4>
-      <ul class="category-list">
-        <a href='{% url "filter_by_category" %}' data-type="1">Жилье</a>
-        <a href='{% url "filter_by_category" %}' data-type="2">Транспорт</a>
-        <a href='{% url "filter_by_category" %}' data-type="3">Медицина</a>
-        <a href='{% url "filter_by_category" %}' data-type="4">Образование</a>
-        <a href='{% url "filter_by_category" %}' data-type="5">Питание</a>
-      </ul>
-    </div>
+  <div class="right-panel">
+    <h4>Категории</h4>
+    <ul class="category-list">
+        <a href="{% url 'filter_by_category' %}?category=1">Жилье</a>
+        <a href="{% url 'filter_by_category' %}?category=2">Транспорт</a>
+        <a href="{% url 'filter_by_category' %}?category=3">Медицина</a>
+        <a href="{% url 'filter_by_category' %}?category=4">Образование</a>
+        <a href="{% url 'filter_by_category' %}?category=5">Питание</a>
+        <a href="{% url 'filter_by_category' %}">Ничего не выбранное</a>
+    </ul>
+</div>
+
 
   <!-- Add Expense Modal -->
   <div class="modal fade" id="addExpenseModal" tabindex="-1" role="dialog" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
@@ -134,17 +137,17 @@
           <form id="addExpenseForm">
             <div class="form-group">
               <label for="expenseAmount">Сумма</label>
-              <input type="number" class="form-control" id="expenseAmount" name="amount" required>
+              <input type="text" class="form-control" id="expenseAmount" name="amount" required>
             </div>
             <div class="form-group">
               <label for="expenseCategory">Категория</label>
               <select class="form-control" id="expenseCategory" name="category">
+                <option value="">Выберите категорию</option>
                 <option value="1">Жилье</option>
                 <option value="2">Транспорт</option>
                 <option value="3">Медицина</option>
                 <option value="4">Образование</option>
                 <option value="5">Питание</option>
-                <option value="">Ничего из списка</option>
                 <!-- Добавьте другие категории по мере необходимости -->
               </select>
             </div>
@@ -173,17 +176,17 @@
           <form id="addIncomeForm">
             <div class="form-group">
               <label for="incomeAmount">Сумма</label>
-              <input type="number" class="form-control" id="incomeAmount" name="amount" required>
+              <input type="text" class="form-control" id="expenseAmount" name="amount" required>
             </div>
             <div class="form-group">
               <label for="incomeCategory">Категория</label>
               <select class="form-control" id="expenseCategory" name="category">
+                <option value="">Выберите категорию</option>
                 <option value="1">Жилье</option>
                 <option value="2">Транспорт</option>
                 <option value="3">Медицина</option>
                 <option value="4">Образование</option>
                 <option value="5">Питание</option>
-                <option value="">Ничего из списка</option>
               </select>
             </div>
             <div id="transactionsList">
@@ -200,6 +203,7 @@
     </div>
   </div>
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'budget_controller_app/js/jquery-3.3.1.min.js' %}"></script>
   <script src="{% static 'budget_controller_app/js/popper.min.js' %}"></script>
   <script src="{% static 'budget_controller_app/js/bootstrap.min.js' %}"></script>
@@ -259,8 +263,9 @@
           $('.table-responsive').load('{% url "get_history" %} .table-responsive');
       });
     });
-
     
+
+
   </script>
 </body>
 </html>
