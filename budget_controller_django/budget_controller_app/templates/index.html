@@ -72,59 +72,88 @@
         }
 
         .navbar {
-            background-color: rgb(60, 55, 62); /* Прозрачный фон */
-            backdrop-filter: blur(10px); /* Размытие фона для красивого эффекта */
-            padding: 10px 0;
-            position: sticky;
-            top: 0;
-            width: 100%;
-            
-        }
+            z-index: 1000; 
+    background-color: rgb(60, 55, 62);
+    backdrop-filter: blur(10px);
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Расположение элементов по краям */
+    align-items: center; /* Центрирование по вертикали */
+}
 
-        .nav-list {
-            list-style: none;
-            display: flex;
-            justify-content: center; /* Центрирование элементов */
-            padding: 0;
-            margin: 0;
-        }
+.nav-list {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
 
-        .nav-item {
-            margin: 0 15px;
-            margin-right: 150px;
-        }
+.nav-item {
+    margin: 0 15px;
+    margin-right: 150px; /* Правый отступ для последнего элемента */
+}
 
-        .nav-link {
-            text-decoration: none;
-            color: #ffffff;
-            font-weight: bold;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s;
-        }
+.nav-link {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
 
-        .nav-link:hover {
-            background-color: #333;
-            color: #fff;
-        }
+.nav-link:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 300px;
+    border-radius: 4px 0 0 4px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.search-type {
+    margin-left: 10px; /* Отступ между полем ввода и выпадающим списком */
+}
+
+.search-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    position: relative; /* Добавляем позиционирование */
+    z-index: 1; /* Устанавливаем z-index для размещения поверх других элементов */
+}
+
   </style>
 </head>
 <body>
-  
-          <!-- <a class="nav-link" href="#"> <span class="sr-only">(current)</span></a>
-          <a class="nav-link" href="#">История</a>
-          <a class="nav-link" href="#">Добавить доход</a>
-          <a class="nav-link" href="#">Добавить расход</a> -->
-
     <nav class="navbar">
-      <ul class="nav-list">
-          <li class="nav-item"><a href="index.html" class="nav-link" style="margin-left: 150px">Главная</a></li>
-          <li class="nav-item"><a href="#about" class="nav-link" data-toggle="modal" data-target="#aboutModal" id="user">О Себе</a></li>
-          <li class="nav-item"><a href='{% url "add_transaction" %}' class="nav-link" data-toggle="modal"data-target="#addTransactionModal">Добавить</a></li>
-          <li class="nav-item"><a href="#contact" class="nav-link">История</a></li>
-          <liclass="nav-item"> Добавить доход</a></li>
-      </ul>
-  </nav>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="index.html" class="nav-link">Главная</a></li>
+            <li class="nav-item"><a href="#about" class="nav-link" data-toggle="modal" data-target="#aboutModal" id="user">О Себе</a></li>
+            <li class="nav-item"><a href='{% url "add_transaction" %}' class="nav-link" data-toggle="modal" data-target="#addTransactionModal">Добавить</a></li>
+        </ul>
+        <form class="search-form" method="GET" action="search_description">
+            <input type="text" name="q" class="search-input" placeholder="Search...">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </nav>
+
+
+
   <div class="content" style="padding-top: 40px;">
     <div class="container">
         <h2 class="mb-5">History</h2>
@@ -180,7 +209,6 @@
         <a href="{% url 'filter_by_category' %}?category=3">Медицина</a>
         <a href="{% url 'filter_by_category' %}?category=4">Образование</a>
         <a href="{% url 'filter_by_category' %}?category=5">Питание</a>
-        
     </ul>
 </div>
 

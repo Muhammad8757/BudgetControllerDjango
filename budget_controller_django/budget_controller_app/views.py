@@ -142,3 +142,20 @@ def check_balance(request) -> float:
 
     total_sum = sum_one - sum_zero
     return total_sum
+
+def search_description(request):
+    phone_number_session = request.session['phone_number']
+    password_session = request.session['password']
+    user = User.objects.get(phone_number=phone_number_session, password=password_session)
+    query = request.GET.get('q')
+    if query:
+        results = UserTransaction.objects.filter(user=user,description=query)
+    else:
+        results = User.objects.none()
+
+    
+    context = {
+        'history': results,
+        'query': query,
+    }
+    return render(request, 'index.html', context)
