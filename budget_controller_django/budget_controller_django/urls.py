@@ -2,8 +2,8 @@ from django.urls import path
 from budget_controller_app import views
 
 urlpatterns = [
-    path("add_income/", views.add_income, name='add_income'),
-    path("add_expense/", views.add_expense, name='add_expense'),
+    path("about_user", views.about_user, name="about_user"),
+    path("add_transaction/", views.add_transaction, name='add_transaction'),
     path("sign_up.html", views.sign_up),
     path("login.html", views.login),
     path("index.html", views.get_history),

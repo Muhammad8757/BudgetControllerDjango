@@ -10,18 +10,20 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'budget_controller_app/css/bootstrap.min.css' %}">
     
+    
     <!-- Style -->
     <link rel="stylesheet" href="{% static 'budget_controller_app/css/style.css' %}">
     
     <!-- FontAwesome (для иконок) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+    
     <style>
-      .right-panel {
+        
+        .right-panel {
             width: 200px;
             padding: 15px;
-            background-color: #f8f9fa;
-            border-left: 1px solid #dee2e6;
+            background-color: rgb(60, 55, 62);
+            border-left: 1px solid rgb(60, 55, 62);
             position: fixed;
             top: 0;
             right: 0;
@@ -31,7 +33,10 @@
             overflow: auto;
         }
         .right-panel h4 {
-            margin-top: 0;
+            margin-top: 85px;
+            color: #fff;
+            margin-top: 8000;
+
         }
         .right-panel .category-list {
             list-style: none;
@@ -41,7 +46,7 @@
             display: block;
             padding: 10px;
             text-decoration: none;
-            color: #333;
+            color: #fff;
             border: 1px solid transparent;
             border-radius: 4px;
             margin-bottom: 5px;
@@ -60,15 +65,72 @@
             bottom: 0;
             background-color: #ccc;
         }  
+
+        body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: rgb(60, 55, 62); /* Прозрачный фон */
+            backdrop-filter: blur(10px); /* Размытие фона для красивого эффекта */
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            justify-content: center; /* Центрирование элементов */
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0 15px;
+            margin-right: 150px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #333;
+            color: #fff;
+        }
   </style>
 </head>
 <body>
-  <div class="content">
+  
+          <!-- <a class="nav-link" href="#"> <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="#">История</a>
+          <a class="nav-link" href="#">Добавить доход</a>
+          <a class="nav-link" href="#">Добавить расход</a> -->
+
+    <nav class="navbar">
+      <ul class="nav-list">
+          <li class="nav-item"><a href="index.html" class="nav-link" style="margin-left: 150px">Главная</a></li>
+          <li class="nav-item"><a href="#about" class="nav-link" data-toggle="modal" data-target="#aboutModal" id="user">О Себе</a></li>
+          <li class="nav-item"><a href='{% url "add_transaction" %}' class="nav-link" data-toggle="modal"data-target="#addTransactionModal">Добавить</a></li>
+          <li class="nav-item"><a href="#contact" class="nav-link">История</a></li>
+          <liclass="nav-item"> Добавить доход</a></li>
+      </ul>
+  </nav>
+  <div class="content" style="padding-top: 40px;">
     <div class="container">
         <h2 class="mb-5">History</h2>
         <div class="mb-3">
-            <a href='{% url "add_income" %}' class="btn btn-success" data-toggle="modal" data-target="#addIncomeModal">Добавить доход</a>
-            <a href='{% url "add_expense" %}' class="btn btn-danger" data-toggle="modal" data-target="#addExpenseModal">Добавить расход</a>
+            
+  
             <button id="refreshHistoryBtn" class="btn btn-primary" title="Обновить историю">
                 <i class="fas fa-sync"></i>
             </button>
@@ -118,90 +180,75 @@
         <a href="{% url 'filter_by_category' %}?category=3">Медицина</a>
         <a href="{% url 'filter_by_category' %}?category=4">Образование</a>
         <a href="{% url 'filter_by_category' %}?category=5">Питание</a>
-        <a href="{% url 'filter_by_category' %}">Ничего не выбранное</a>
+        
     </ul>
 </div>
 
-
+<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aboutModalLabel">О Себе</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body aboutuser">
+                <div class="aboutuser">
+                    <h5 class="modal-title">Имя: {{ user_name }}</h5>
+                    <h5 class="modal-title">Телефонный номер: {{ phone_number }}</h5>
+                    <h5 class="modal-title">Счет: {{ amount }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
   <!-- Add Expense Modal -->
-  <div class="modal fade" id="addExpenseModal" tabindex="-1" role="dialog" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+  <div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog" aria-labelledby="addTransactionModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addExpenseModalLabel">Добавить расход</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTransactionModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addTransactionForm">
+                    <div class="form-group">
+                        <label for="transactionType">Тип</label>
+                        <select class="form-control" id="transactionType" name="type" required>
+                            <option value="0">Расход</option>
+                            <option value="1">Доход</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionAmount">Сумма</label>
+                        <input type="text" class="form-control" id="transactionAmount" name="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionCategory">Категория</label>
+                        <select class="form-control" id="transactionCategory" name="category">
+                            <option value="">Выберите категорию</option>
+                            <option value="1">Жилье</option>
+                            <option value="2">Транспорт</option>
+                            <option value="3">Медицина</option>
+                            <option value="4">Образование</option>
+                            <option value="5">Питание</option>
+                            <!-- Добавьте другие категории по мере необходимости -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionDescription">Описание</label>
+                        <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
+            </div>
         </div>
-        <div class="modal-body">
-          <form id="addExpenseForm">
-            <div class="form-group">
-              <label for="expenseAmount">Сумма</label>
-              <input type="text" class="form-control" id="expenseAmount" name="amount" required>
-            </div>
-            <div class="form-group">
-              <label for="expenseCategory">Категория</label>
-              <select class="form-control" id="expenseCategory" name="category">
-                <option value="">Выберите категорию</option>
-                <option value="1">Жилье</option>
-                <option value="2">Транспорт</option>
-                <option value="3">Медицина</option>
-                <option value="4">Образование</option>
-                <option value="5">Питание</option>
-                <!-- Добавьте другие категории по мере необходимости -->
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="expenseDescription">Описание</label>
-              <textarea class="form-control" id="expenseDescription" name="description" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Сохранить</button>
-          </form>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <!-- Add Income Modal -->
-  <div class="modal fade" id="addIncomeModal" tabindex="-1" role="dialog" aria-labelledby="addIncomeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addIncomeModalLabel">Добавить доход</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="addIncomeForm">
-            <div class="form-group">
-              <label for="incomeAmount">Сумма</label>
-              <input type="text" class="form-control" id="expenseAmount" name="amount" required>
-            </div>
-            <div class="form-group">
-              <label for="incomeCategory">Категория</label>
-              <select class="form-control" id="expenseCategory" name="category">
-                <option value="">Выберите категорию</option>
-                <option value="1">Жилье</option>
-                <option value="2">Транспорт</option>
-                <option value="3">Медицина</option>
-                <option value="4">Образование</option>
-                <option value="5">Питание</option>
-              </select>
-            </div>
-            <div id="transactionsList">
-              <!-- Здесь будут отображаться транзакции -->
-            </div>
-            <div class="form-group">
-              <label for="incomeDescription">Описание</label>
-              <textarea class="form-control" id="incomeDescription" name="description" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Сохранить</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'budget_controller_app/js/jquery-3.3.1.min.js' %}"></script>
@@ -221,51 +268,35 @@
         });
         
         // Обработчик формы добавления дохода
-        $('#addIncomeForm').on('submit', function(event) {
-            event.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: '{% url "add_income" %}',
-                data: $(this).serialize(),
-                success: function(response) {
-                    $('#addIncomeModal').modal('hide');
-                    alert('Доход добавлен успешно!');
-                    // Обновляем историю после успешного добавления
-                    $('.table-responsive').load('{% url "get_history" %} .table-responsive');
-                },
-                error: function(response) {
-                    alert('Произошла ошибка при добавлении дохода.');
-                }
-            });
+        $('#addTransactionForm').on('submit', function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "add_transaction" %}',
+            data: $(this).serialize(),
+            success: function(response) {
+                $('#addTransactionModal').modal('hide');
+                alert('Транзакция добавлена успешно!');
+                // Обновляем историю после успешного добавления
+                $('.table-responsive').load('{% url "get_history" %} .table-responsive');
+            },
+            error: function(response) {
+                alert('Произошла ошибка при добавлении транзакции.');
+            }
         });
+    });
 
-        // Обработчик формы добавления расхода
-        $('#addExpenseForm').on('submit', function(event) {
-            event.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: '{% url "add_expense" %}',
-                data: $(this).serialize(),
-                success: function(response) {
-                    $('#addExpenseModal').modal('hide');
-                    alert('Расход добавлен успешно!');
-                    // Обновляем историю после успешного добавления
-                    $('.table-responsive').load('{% url "get_history" %} .table-responsive');
-                },
-                error: function(response) {
-                    alert('Произошла ошибка при добавлении расхода.');
-                }
-            });
-        });
+    $('#user').click(function() {
+          $('.aboutuser').load('{% url "about_user" %} .aboutuser');
+      });
 
         // Обработчик кнопки обновления истории
         $('#refreshHistoryBtn').click(function() {
           $('.table-responsive').load('{% url "get_history" %} .table-responsive');
       });
     });
+
     
-
-
   </script>
 </body>
 </html>
