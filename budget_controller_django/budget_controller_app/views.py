@@ -1,4 +1,5 @@
-from datetime import datetime 
+from datetime import datetime
+from pyexpat.errors import messages 
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404, redirect, render
@@ -41,11 +42,6 @@ def get_history(request):
     password_session = request.session['password']
     user = User.objects.get(phone_number=phone_number_session, password=password_session)
     history = UserTransaction.objects.filter(user=user).order_by('-date')
-    for result in history:
-        if result.category:
-            print(result.category.name)
-        else:
-            print("Category is None for this transaction")
     context = {
         'history': history,
     }
@@ -108,11 +104,6 @@ def filter_by_category(request):
 
     filter_by_category_result = UserTransaction.objects.filter(user=user, category_id=choosen_category)
     print(f"Found transactions: {filter_by_category_result.count()}") 
-    for result in filter_by_category_result:
-        if result.category:
-            print(result.category.name)
-        else:
-            print("Category is None for this transaction")
     context = {
         'history': filter_by_category_result,
     }
@@ -153,13 +144,12 @@ def search_description(request):
         results = UserTransaction.objects.filter(user=user,description=query)
     else:
         results = User.objects.none()
-
     
     context = {
         'history': results,
         'query': query,
     }
-    return render(request, 'index.html', context)
+    return render(request, 'index.html', context=context)
 
 def display_index(request):
     return render(request, 'index.html')
@@ -201,32 +191,44 @@ def delete_transaction(request):
 
 def edit_transaction(request):
     if request.method == "POST":
-        id_user = request.GET.get('id')
-        amount = float(amount)
-        type_transaction = int(type_transaction)
-        description = request.POST.get("description", None)
-        category_id = request.POST.get("category", None)
-        phone_number_session = request.session['phone_number']
-        password_session = request.session['password']
+        transaction_id = request.GET.get('id')
+        amount = float(request.GET.get("amount", 0))
+        type_transaction = int(request.GET.get("type", 0))
+        description = request.GET.get("description", None)
+        category_id = request.GET.get("category", None)
+        # Retrieve user based on session data (example assuming session management)
+        phone_number_session = request.session.get('phone_number')
+        password_session = request.session.get('password')
+        
+        if phone_number_session and password_session:
+            try:
+                user = User.objects.get(phone_number=phone_number_session, password=password_session)
+            except User.DoesNotExist:
+                messages.error(request, "Пользователь не найден.")
+                return redirect('index')
 
-        user = User.objects.get(phone_number=phone_number_session, password=password_session)
-        transaction = UserTransaction.objects.get(user=user, id=id_user)
+            try:
+                transaction = UserTransaction.objects.get(user=user, id=transaction_id)
+            except UserTransaction.DoesNotExist:
+                messages.error(request, "Транзакция не найдена.")
+                return redirect('login')
 
-
-        category = None
-        """
-        Чтобы избежать этой ошибки, нужно либо инициализировать category заранее, либо убедиться, 
-        что она всегда будет иметь значение до того, как будет использоваться в коде.
-        """
-        if category_id:
-            category = get_object_or_404(Category, pk=category_id)
-            transaction.category = category
-
-        transaction.amount = amount
-        transaction.date = datetime.now().replace(second=0, microsecond=0)
-        transaction.description = description
-        transaction.type = type_transaction
-        transaction.save()
-
+            # Update transaction details
+            if category_id:
+                category = get_object_or_404(Category, pk=category_id)
+                transaction.category = category
+            
+            transaction.amount = amount
+            transaction.date = datetime.now().replace(second=0, microsecond=0)
+            transaction.description = description
+            transaction.type = type_transaction
+            transaction.save()
+            messages.success(request, "Транзакция успешно изменена.")
+        
+        else:
+            messages.error(request, "Пользователь не авторизован.")
+        
         return redirect('index')
+
+    # If request method is not POST, render the index page or appropriate view
     return render(request, "index.html")

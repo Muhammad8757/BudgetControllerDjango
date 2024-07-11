@@ -40,7 +40,7 @@
   <!-- Fixed navbar -->
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Бюджет контроллер</a>
+      <a class="navbar-brand" href="/">Бюджет контроллер</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -65,16 +65,18 @@
               <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=3">Медицина</a></li>
               <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=4">Образование</a></li>
               <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=5">Питание</a></li>
-              <li><hr class="dropdown-divider"></li>
+              <!-- <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="#">Добавить категорию</a></li>
-              <li><a class="dropdown-item" href="#" >Удалить категорию</a></li>
+              <li><a class="dropdown-item" href="#" >Удалить категорию</a></li> -->
             </ul>
             <li class="nav-item"><a href='{% url "add_transaction" %}' class="nav-link" data-toggle="modal" data-target="#addTransactionModal">Добавить</a></li>
           </li>
+          
         </ul>
-        <form class="d-flex">
-          <input class="form-control me-2" type="search" placeholder="Поиск..." aria-label="Search">
+        <form class="d-flex" action='{% url "search_description" %}' method="GET">
+          <input class="form-control me-2" type="search" name="q" placeholder="Поиск..." aria-label="Search">
           <button class="btn btn-outline-success" type="submit">Поиск</button>
+          
         </form>
       </div>
     </div>
@@ -94,7 +96,7 @@
             <div class="modal-body aboutuser">
                 <div class="aboutuser">
                     <h5 class="modal-title">Имя: {{ user_name }}</h5>
-                    <h5 class="modal-title">Телефонный номер: {{ phone_number }}</h5>
+                    <h5 class="modal-title">Логин: {{ phone_number }}</h5>
                     <h5 class="modal-title">Счет: {{ amount }}</h5>
                 </div>
             </div>
@@ -147,54 +149,6 @@
             </div>
         </div>
     </div>
-</div>
-
-
-
-<div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="editTransactionModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="editTransactionModalLabel">Добавить</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          <div class="modal-body">
-              <form id="editTransactionModal" action="{% url 'edit_transaction' %}" method="post">
-                  {% csrf_token %}
-                  <div class="form-group">
-                      <label for="transactionType">Тип</label>
-                      <select class="form-control" id="transactionType" name="type" required>
-                          <option value="0">Расход</option>
-                          <option value="1">Доход</option>
-                      </select>
-                  </div>
-                  <div class="form-group">
-                      <label for="transactionAmount">Сумма</label>
-                      <input type="text" class="form-control" id="transactionAmount" name="amount" required>
-                  </div>
-                  <div class="form-group">
-                      <label for="transactionCategory">Категория</label>
-                      <select class="form-control" id="transactionCategory" name="category">
-                          <option value="">Выберите категорию</option>
-                          <option value="1">Жилье</option>
-                          <option value="2">Транспорт</option>
-                          <option value="3">Медицина</option>
-                          <option value="4">Образование</option>
-                          <option value="5">Питание</option>
-                          <!-- Добавьте другие категории по мере необходимости -->
-                      </select>
-                  </div>
-                  <div class="form-group">
-                      <label for="transactionDescription">Описание</label>
-                      <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
-                  </div>
-                  <button type="submit" class="btn btn-primary">Сохранить</button>
-              </form>
-          </div>
-      </div>
-  </div>
 </div>
 
 
@@ -255,7 +209,54 @@
                   </div>
                 </div>
               </div>
-              <a href="{% url 'edit_transaction' %}" data-toggle="modal" data-target="#editTransactionModal" data-id="{{ transaction.id }}" class="btn btn-sm btn-primary edit-transaction">Изменить</a>
+
+              <div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="editTransactionModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editTransactionModalLabel">Изменить транзакцию</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editTransactionForm" action="{% url 'edit_transaction' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" id="transactionId" name="id" value="">
+                                <div class="form-group">
+                                    <label for="transactionType">Тип</label>
+                                    <select class="form-control" id="transactionType" name="type" required>
+                                        <option value="0">Расход</option>
+                                        <option value="1">Доход</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="transactionAmount">Сумма</label>
+                                    <input type="text" class="form-control" id="transactionAmount" name="amount" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="transactionCategory">Категория</label>
+                                    <select class="form-control" id="transactionCategory" name="category">
+                                        <option value="">Выберите категорию</option>
+                                        <option value="1">Жилье</option>
+                                        <option value="2">Транспорт</option>
+                                        <option value="3">Медицина</option>
+                                        <option value="4">Образование</option>
+                                        <option value="5">Питание</option>
+                                        <!-- Добавьте другие категории по мере необходимости -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="transactionDescription">Описание</label>
+                                    <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
+                                </div>
+                                <a href="{% url 'edit_transaction' %}?id={{ transaction.id }}&amount={{transaction.amount}}&type={{ transaction.type }}&category={{ transaction.category.id }}&description={{ transaction.description }}" class="btn btn-primary" id="edit-transactionId">Сохранить</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              <a href="#" class="btn btn-sm btn-primary edit-transaction" data-toggle="modal" data-target="#editTransactionModal" data-id="{{ transaction.id }}" data-amount="{{ transaction.amount }}" data-type="{{ transaction.type }}" data-category="{{ transaction.category.id }}" data-description="{{ transaction.description }}">Изменить</a>
               <a href="#" class="btn btn-sm btn-danger delete-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ transaction.id }}">Удалить</a>
             </td>
           </tr>
@@ -270,9 +271,6 @@
     </div>
   </div>
 </div>
-
-
-<!-- Модальное окно подтверждения удаления -->
 
 
 <footer class="footer mt-auto py-3 bg-light">
@@ -294,6 +292,12 @@
 <script>
 
 document.getElementById("addTransactionForm").reset();
+
+
+
+
+
+
 
 $(document).ready(function() {
   $('.delete-btn').on('click', function(event) {
