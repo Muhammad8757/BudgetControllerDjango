@@ -97,7 +97,7 @@
                 <div class="aboutuser">
                     <h5 class="modal-title">Имя: {{ user_name }}</h5>
                     <h5 class="modal-title">Логин: {{ phone_number }}</h5>
-                    <h5 class="modal-title">Счет: {{ amount }}</h5>
+                    <h5 class="modal-title">Баланс: {{ amount }}</h5>
                 </div>
             </div>
         </div>
@@ -120,6 +120,7 @@
                     <div class="form-group">
                         <label for="transactionType">Тип</label>
                         <select class="form-control" id="transactionType" name="type" required>
+                            <option value="">Выбрать</option>
                             <option value="0">Расход</option>
                             <option value="1">Доход</option>
                         </select>
@@ -144,7 +145,7 @@
                         <label for="transactionDescription">Описание</label>
                         <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button id="saveTransactionBtn"type="submit" class="btn btn-primary">Сохранить</button>
                 </form>
             </div>
         </div>
@@ -226,6 +227,7 @@
                                 <div class="form-group">
                                     <label for="transactionType">Тип</label>
                                     <select class="form-control" id="transactionType" name="type" required>
+                                        <option value="">Выбрать</option>
                                         <option value="0">Расход</option>
                                         <option value="1">Доход</option>
                                     </select>
@@ -250,7 +252,7 @@
                                     <label for="transactionDescription">Описание</label>
                                     <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
                                 </div>
-                                <a href="{% url 'edit_transaction' %}?id={{ transaction.id }}&amount={{transaction.amount}}&type={{ transaction.type }}&category={{ transaction.category.id }}&description={{ transaction.description }}" class="btn btn-primary" id="edit-transactionId">Сохранить</a>
+                                <a href="{% url 'edit_transaction' %}?id={{ transaction.id }}&amount={{ transaction.amount }}&type={{ transaction.type }}&category={{ transaction.category.id }}&description={{ transaction.description }}" class="btn btn-primary" id="edit-transactionId">Сохранить</a>
                             </form>
                         </div>
                     </div>
@@ -288,61 +290,78 @@
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 
- 
+
 <script>
-
-document.getElementById("addTransactionForm").reset();
-
-
-
-
-
-
-
-$(document).ready(function() {
-  $('.delete-btn').on('click', function(event) {
-    event.preventDefault();
-    var transactionId = $(this).data('id');
-    var deleteUrl = $('#confirmDeleteLink').attr('href') + '?id=' + transactionId;
-    $('#confirmDeleteLink').attr('href', deleteUrl);
-    $('#confirmDeleteModal').modal('show');
-  });
-});
+  // Сброс формы добавления транзакции при загрузке страницы
   document.addEventListener('DOMContentLoaded', function() {
-    // Функция для получения количества транзакций для категории
-    function getTransactionsCount(categoryId) {
-      fetch(`/api/get_transactions_count?category=${categoryId}`) // Обратите внимание на использование `/api/` перед URL
-        .then(response => response.json())
-        .then(data => {
-          const countElement = document.getElementById(`transactions_count_${categoryId}`);
-          if (countElement) {
-            countElement.textContent = ` (${data.count})`; // data.count - количество транзакций
-          }
-        })
-        .catch(error => console.error('Ошибка при получении количества транзакций', error));
-    }
-    
-    // Загрузка количества транзакций для каждой категории при открытии дропдауна
-    const dropdownMenu = document.querySelector('.dropdown-menu');
-    dropdownMenu.addEventListener('show.bs.dropdown', function() {
-      getTransactionsCount(1); // Пример для первой категории
-      getTransactionsCount(2); // Пример для второй категории
-      getTransactionsCount(3); // Пример для третьей категории
-      // и т.д.
-    });
-  
-    // Обновление истории транзакций по клику на кнопку
-    $('#refreshHistoryBtn').click(function() {
-      $('.table-responsive').load('{% url "get_history" %} .table-responsive');
-    });
+      document.getElementById("addTransactionForm").reset();
   });
 
-  $('#user').click(function() {
-          $('.aboutuser').load('{% url "about_user" %} .aboutuser');
+  $(document).ready(function() {
+      // Обработчик кнопки удаления транзакции
+      $('.delete-btn').on('click', function(event) {
+          event.preventDefault();
+          var transactionId = $(this).data('id');
+          var deleteUrl = $('#confirmDeleteLink').attr('href') + '?id=' + transactionId;
+          $('#confirmDeleteLink').attr('href', deleteUrl);
+          $('#confirmDeleteModal').modal('show');
       });
 
-  </script>
+
+
+      // Обновление истории транзакций по клику на кнопку "Обновить"
+      function loadHistory() {
+        fetch('{% url "get_history" %}')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.querySelector('.table-responsive').innerHTML;
+                document.querySelector('.table-responsive').innerHTML = newContent;
+            })
+            .catch(error => console.error('Error:', error));
+      }
+
+      loadHistory();
+
+
+      document.getElementById('refreshHistoryBtn').addEventListener('click', loadHistory);
+
+      document.getElementById('saveTransactionBtn').addEventListener('click', loadHistory);
+
+      function loadTransactionData(id, amount, type, category, description) {
+    document.getElementById('transactionId-' + id).value = id;
+    document.getElementById('transactionAmount-' + id).value = amount;
+    document.getElementById('transactionType-' + id).value = type;
+    document.getElementById('transactionCategory-' + id).value = category;
+    document.getElementById('transactionDescription-' + id).value = description;
+}
+
+      
+      document.getElementById('user').addEventListener('click', function() {
+    fetch('{% url "about_user" %}')
+        .then(response => response.text())
+        .then(html => {
+            // Создаем временный элемент, чтобы вставить в него HTML-код и вытащить нужную часть
+            const tempElement = document.createElement('div');
+            tempElement.innerHTML = html;
+            
+            // Находим элемент с классом 'aboutuser' внутри загруженного HTML-кода
+            const aboutUserContent = tempElement.querySelector('.aboutuser').innerHTML;
+            
+            // Обновляем содержимое нужного элемента на странице
+            document.querySelector('.aboutuser').innerHTML = aboutUserContent;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
+  });
+
   
+</script>
+
+
   
 </body>
 </html>

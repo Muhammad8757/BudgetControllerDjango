@@ -14,7 +14,7 @@
         {% csrf_token %}
         <p>Name: <br><input type="text" name="name" /></p>
         <p>Phone Number: <br><input type="number" name="phone_number"></p>
-        <p>Password: <br><input type="text" name="password"></p>
+        <p>Password: <br><input type="password" name="password"></p>
         <div class="form-actions">
             <input type="submit" value="Send">
             <p>Already have an account? <a href="{% url 'login' %}" class="login-link">Log in here</a></p>

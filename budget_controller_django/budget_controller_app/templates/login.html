@@ -13,7 +13,7 @@
     <form method="post" action="">
         {% csrf_token %}
         <p>Phone Number: <br><input type="text" name="phone_number"></p>
-        <p>Password: <br><input type="text" name="password"></p>
+        <p>Password: <br><input type="password" name="password"></p>
         <div class="form-actions">
             <input type="submit" value="Send">
             <p>Don't have an account? <a href="{% url 'sign_up' %}" class="signup-link">Sign up here</a></p>
