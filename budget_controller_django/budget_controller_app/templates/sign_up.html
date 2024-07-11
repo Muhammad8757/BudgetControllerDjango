@@ -6,16 +6,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up User</title>
-    <link rel="stylesheet" href="{% static 'budget_controller_app/css/sign_up_style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/sign_up_style.css' %}">
 </head>
 <body>
     <h2>Sign Up User</h2>
-    <form method="post" action="sign_up.html">
+    <form method="post" action="sign_up">
         {% csrf_token %}
         <p>Name: <br><input type="text" name="name" /></p>
         <p>Phone Number: <br><input type="number" name="phone_number"></p>
         <p>Password: <br><input type="text" name="password"></p>
-        <input type="submit" value="Send">
+        <div class="form-actions">
+            <input type="submit" value="Send">
+            <p>Already have an account? <a href="{% url 'login' %}" class="login-link">Log in here</a></p>
+        </div>
     </form>
 </body>
 </html>

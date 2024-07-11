@@ -1,225 +1,95 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="h-100">
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>History</title>
-    
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{% static 'budget_controller_app/css/bootstrap.min.css' %}">
-    
-    
-    <!-- Style -->
-    <link rel="stylesheet" href="{% static 'budget_controller_app/css/style.css' %}">
-    
-    <!-- FontAwesome (для иконок) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    
-    <style>
-        
-        .right-panel {
-            width: 200px;
-            padding: 15px;
-            background-color: rgb(60, 55, 62);
-            border-left: 1px solid rgb(60, 55, 62);
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            overflow-y: auto;
-            resize: horizontal;
-            overflow: auto;
-        }
-        .right-panel h4 {
-            margin-top: 85px;
-            color: #fff;
-            margin-top: 8000;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.84.0">
+  <title>Index</title>
 
-        }
-        .right-panel .category-list {
-            list-style: none;
-            padding: 0;
-        }
-        .right-panel .category-list a {
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-            color: #fff;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            margin-bottom: 5px;
-        }
-        .right-panel .category-list a:hover {
-            background-color: #007bff;
-            color: #fff;
-            border-color: #007bff;
-        }
-        .right-panel .resizer {
-            width: 10px;
-            cursor: ew-resize;
-            position: absolute;
-            top: 0;
-            left: -5px;
-            bottom: 0;
-            background-color: #ccc;
-        }  
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sticky-footer-navbar/">
 
-        body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        }
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  
 
-        .navbar {
-            z-index: 1000; 
-    background-color: rgb(60, 55, 62);
-    backdrop-filter: blur(10px);
-    padding: 10px 0;
-    position: sticky;
-    top: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between; /* Расположение элементов по краям */
-    align-items: center; /* Центрирование по вертикали */
-}
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
 
-.nav-list {
-    list-style: none;
-    display: flex;
-    padding: 0;
-    margin: 0;
-}
-
-.nav-item {
-    margin: 0 15px;
-    margin-right: 150px; /* Правый отступ для последнего элемента */
-}
-
-.nav-link {
-    text-decoration: none;
-    color: #ffffff;
-    font-weight: bold;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.nav-link:hover {
-    background-color: #333;
-    color: #fff;
-}
-
-.search-form {
-    display: flex;
-    align-items: center;
-}
-
-.search-input {
-    width: 300px;
-    border-radius: 4px 0 0 4px;
-    padding: 10px;
-    border: 1px solid #ccc;
-}
-
-.search-type {
-    margin-left: 10px; /* Отступ между полем ввода и выпадающим списком */
-}
-
-.search-button {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-    position: relative; /* Добавляем позиционирование */
-    z-index: 1; /* Устанавливаем z-index для размещения поверх других элементов */
-}
-
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
   </style>
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
 </head>
-<body>
-    <nav class="navbar">
-        <ul class="nav-list">
-            <li class="nav-item"><a href="index.html" class="nav-link">Главная</a></li>
-            <li class="nav-item"><a href="#about" class="nav-link" data-toggle="modal" data-target="#aboutModal" id="user">О Себе</a></li>
+<body class="d-flex flex-column h-100">
+
+<header>
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Бюджет контроллер</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Главная</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Выход</a>
+          </li>
+          <li class="nav-item">
+            <a href="#about" class="nav-link" data-bs-toggle="modal" data-bs-target="#aboutModal" id="user">Профиль</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Категории
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=1">Жилье</a></li>
+              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=2">Транспорт</a></li>
+              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=3">Медицина</a></li>
+              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=4">Образование</a></li>
+              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=5">Питание</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Добавить категорию</a></li>
+              <li><a class="dropdown-item" href="#" >Удалить категорию</a></li>
+            </ul>
             <li class="nav-item"><a href='{% url "add_transaction" %}' class="nav-link" data-toggle="modal" data-target="#addTransactionModal">Добавить</a></li>
+          </li>
         </ul>
-        <form class="search-form" method="GET" action="search_description">
-            <input type="text" name="q" class="search-input" placeholder="Search...">
-            <button type="submit" class="search-button">Search</button>
+        <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Поиск..." aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Поиск</button>
         </form>
-    </nav>
-
-
-
-  <div class="content" style="padding-top: 40px;">
-    <div class="container">
-        <h2 class="mb-5">History</h2>
-        <div class="mb-3">
-            
-  
-            <button id="refreshHistoryBtn" class="btn btn-primary" title="Обновить историю">
-                <i class="fas fa-sync"></i>
-            </button>
-        </div>
-        <div id="refreshHistoryBtn" class="table-responsive">
-            <table class="table table-striped custom-table">
-                <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Description</th>
-                    </tr>
-                </thead>
-                <tbody id="historyContainer">
-                    {% for transaction in history %}
-                    <tr>
-                        <td>{{ transaction.date }}</td>
-                        <td>{{ transaction.amount }}</td>
-                        <td>
-                            {% if transaction.type %}
-                                Доход
-                            {% else %}
-                                Расход
-                            {% endif %}
-                        </td>
-                        <td>{{ transaction.category.name }}</td>
-                        <td>{{ transaction.description }}</td>
-                    </tr>
-                    {% empty %}
-                        <tr><td colspan="5">Нет доступных транзакций.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+      </div>
     </div>
-  </div>
+  </nav>
+</header>
 
-  
-
-  <div class="right-panel">
-    <h4>Категории</h4>
-    <ul class="category-list">
-        <a href="{% url 'filter_by_category' %}?category=1">Жилье</a>
-        <a href="{% url 'filter_by_category' %}?category=2">Транспорт</a>
-        <a href="{% url 'filter_by_category' %}?category=3">Медицина</a>
-        <a href="{% url 'filter_by_category' %}?category=4">Образование</a>
-        <a href="{% url 'filter_by_category' %}?category=5">Питание</a>
-    </ul>
-</div>
 
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="aboutModalLabel">О Себе</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
             </div>
             <div class="modal-body aboutuser">
                 <div class="aboutuser">
@@ -231,18 +101,20 @@
         </div>
     </div>
   </div>
-  <!-- Add Expense Modal -->
+
+
   <div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog" aria-labelledby="addTransactionModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addTransactionModalLabel"></h5>
+                <h5 class="modal-title" id="addTransactionModalLabel">Добавить</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addTransactionForm">
+                <form id="addTransactionForm" action="{% url 'add_transaction' %}" method="post">
+                    {% csrf_token %}
                     <div class="form-group">
                         <label for="transactionType">Тип</label>
                         <select class="form-control" id="transactionType" name="type" required>
@@ -278,53 +150,195 @@
 </div>
 
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{% static 'budget_controller_app/js/jquery-3.3.1.min.js' %}"></script>
-  <script src="{% static 'budget_controller_app/js/popper.min.js' %}"></script>
-  <script src="{% static 'budget_controller_app/js/bootstrap.min.js' %}"></script>
-  <script src="{% static 'budget_controller_app/js/main.js' %}"></script>
 
-  <script>
-    $(document).ready(function() {
-        // Установка CSRF токена для всех AJAX запросов
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-                }
-            }
-        });
-        
-        // Обработчик формы добавления дохода
-        $('#addTransactionForm').on('submit', function(event) {
-        event.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url: '{% url "add_transaction" %}',
-            data: $(this).serialize(),
-            success: function(response) {
-                $('#addTransactionModal').modal('hide');
-                alert('Транзакция добавлена успешно!');
-                // Обновляем историю после успешного добавления
-                $('.table-responsive').load('{% url "get_history" %} .table-responsive');
-            },
-            error: function(response) {
-                alert('Произошла ошибка при добавлении транзакции.');
-            }
-        });
+<div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="editTransactionModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="editTransactionModalLabel">Добавить</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form id="editTransactionModal" action="{% url 'edit_transaction' %}" method="post">
+                  {% csrf_token %}
+                  <div class="form-group">
+                      <label for="transactionType">Тип</label>
+                      <select class="form-control" id="transactionType" name="type" required>
+                          <option value="0">Расход</option>
+                          <option value="1">Доход</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label for="transactionAmount">Сумма</label>
+                      <input type="text" class="form-control" id="transactionAmount" name="amount" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="transactionCategory">Категория</label>
+                      <select class="form-control" id="transactionCategory" name="category">
+                          <option value="">Выберите категорию</option>
+                          <option value="1">Жилье</option>
+                          <option value="2">Транспорт</option>
+                          <option value="3">Медицина</option>
+                          <option value="4">Образование</option>
+                          <option value="5">Питание</option>
+                          <!-- Добавьте другие категории по мере необходимости -->
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label for="transactionDescription">Описание</label>
+                      <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Сохранить</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<!-- Begin page content -->
+<div class="content" style="padding-top: 70px;">
+  <div class="container">
+    <h2 class="mb-5">История</h2>
+    <div class="mb-3">
+      <button id="refreshHistoryBtn" class="btn btn-primary" title="Обновить историю">
+        <i class="fas fa-sync"></i> Обновить историю
+      </button>
+    </div>
+    <div id="refreshHistoryBtn" class="table-responsive">
+      <table class="table table-striped custom-table">
+        <thead>
+          <tr>
+            <th scope="col">№</th>
+            <th scope="col">Сумма</th>
+            <th scope="col">Тип</th>
+            <th scope="col">Категория</th>
+            <th scope="col">Дата</th>
+            <th scope="col">Описание</th>
+            <th scope="col">Действия</th>
+          </tr>
+        </thead>
+        <tbody id="historyContainer">
+          {% for transaction in history %}
+          {% with forloop.counter as index %}
+          <tr>
+            <td>{{ index }}</td>
+            <td>{{ transaction.amount }}</td>
+            <td>
+              {% if transaction.type == 1 %}
+                Доход
+              {% else %}
+                Расход
+              {% endif %}
+            </td>
+            <td>{{ transaction.category.name }}</td>
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.description }}</td>
+            <td>
+              <!-- Modal -->
+              <div class="modal fade" id="confirmDeleteModal-{{ transaction.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ transaction.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="confirmDeleteModalLabel-{{ transaction.id }}">Подтверждение удаления</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      Вы уверены, что хотите удалить транзакцию?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                      <a href="{% url 'delete_transaction' %}?id={{ transaction.id }}" class="btn btn-danger">Удалить</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a href="{% url 'edit_transaction' %}" data-toggle="modal" data-target="#editTransactionModal" data-id="{{ transaction.id }}" class="btn btn-sm btn-primary edit-transaction">Изменить</a>
+              <a href="#" class="btn btn-sm btn-danger delete-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ transaction.id }}">Удалить</a>
+            </td>
+          </tr>
+          {% endwith %}
+          {% empty %}
+          <tr>
+            <td colspan="6">Нет доступных транзакций.</td>
+          </tr>
+          {% endfor %}
+        </tbody>        
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Модальное окно подтверждения удаления -->
+
+
+<footer class="footer mt-auto py-3 bg-light">
+  <div class="container">
+    <span class="text-muted">Place sticky footer content here.</span>
+  </div>
+</footer>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+
+ 
+<script>
+
+document.getElementById("addTransactionForm").reset();
+
+$(document).ready(function() {
+  $('.delete-btn').on('click', function(event) {
+    event.preventDefault();
+    var transactionId = $(this).data('id');
+    var deleteUrl = $('#confirmDeleteLink').attr('href') + '?id=' + transactionId;
+    $('#confirmDeleteLink').attr('href', deleteUrl);
+    $('#confirmDeleteModal').modal('show');
+  });
+});
+  document.addEventListener('DOMContentLoaded', function() {
+    // Функция для получения количества транзакций для категории
+    function getTransactionsCount(categoryId) {
+      fetch(`/api/get_transactions_count?category=${categoryId}`) // Обратите внимание на использование `/api/` перед URL
+        .then(response => response.json())
+        .then(data => {
+          const countElement = document.getElementById(`transactions_count_${categoryId}`);
+          if (countElement) {
+            countElement.textContent = ` (${data.count})`; // data.count - количество транзакций
+          }
+        })
+        .catch(error => console.error('Ошибка при получении количества транзакций', error));
+    }
+    
+    // Загрузка количества транзакций для каждой категории при открытии дропдауна
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    dropdownMenu.addEventListener('show.bs.dropdown', function() {
+      getTransactionsCount(1); // Пример для первой категории
+      getTransactionsCount(2); // Пример для второй категории
+      getTransactionsCount(3); // Пример для третьей категории
+      // и т.д.
     });
+  
+    // Обновление истории транзакций по клику на кнопку
+    $('#refreshHistoryBtn').click(function() {
+      $('.table-responsive').load('{% url "get_history" %} .table-responsive');
+    });
+  });
 
-    $('#user').click(function() {
+  $('#user').click(function() {
           $('.aboutuser').load('{% url "about_user" %} .aboutuser');
       });
 
-        // Обработчик кнопки обновления истории
-        $('#refreshHistoryBtn').click(function() {
-          $('.table-responsive').load('{% url "get_history" %} .table-responsive');
-      });
-    });
-
-    
   </script>
+  
+  
 </body>
 </html>

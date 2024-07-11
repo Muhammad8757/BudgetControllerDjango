@@ -1,5 +1,6 @@
 from datetime import datetime 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 
@@ -18,7 +19,7 @@ def sign_up(request) -> HttpResponse:
         request.session['password'] = password
         
         # Перенаправляем на страницу index
-        return redirect('index.html')
+        return redirect('index')
     
     return render(request, "sign_up.html")
 
@@ -30,9 +31,9 @@ def login(request):
             User.objects.get(phone_number=phone_number, password=password)
             request.session['phone_number'] = phone_number
             request.session['password'] = password
-            return redirect('index')
+            return render(request, 'index.html')
         except User.DoesNotExist:
-            return redirect('login.html')
+            return redirect('display_index')
     return render(request, "login.html")
 
 def get_history(request):
@@ -83,10 +84,10 @@ def add_transaction(request):
                 user=user
             )
 
-            return HttpResponse("Expense added successfully!")
+            return render(request, "index.html")
         else:
             return HttpResponse("User not authenticated.")
-    return render(request, "add_expense.html")
+    return render(request, "index.html")
 
 def filter_by_category(request):
     choosen_category = request.GET.get("category", None)
@@ -113,10 +114,10 @@ def filter_by_category(request):
         else:
             print("Category is None for this transaction")
     context = {
-        'filter_res': filter_by_category_result,
+        'history': filter_by_category_result,
     }
 
-    return render(request, 'transactions_partial.html', context)
+    return render(request, 'index.html', context)
 
 def about_user(request):
     phone_number_session = request.session.get('phone_number')
@@ -159,3 +160,73 @@ def search_description(request):
         'query': query,
     }
     return render(request, 'index.html', context)
+
+def display_index(request):
+    return render(request, 'index.html')
+
+def logout_view(request):
+    # Очистить сессию
+    if 'password' in request.session:
+        del request.session['password']
+    if 'phone' in request.session:
+        del request.session['phone']
+    
+    # Выйти из аккаунта
+    logout(request)
+    
+    # Перенаправить на страницу входа или главную страницу
+    return redirect('login')
+
+def get_transactions_count(request):
+    if 'phone_number' in request.session and 'password' in request.session:
+        phone_number_session = request.session['phone_number']
+        password_session = request.session['password']
+        user = get_object_or_404(User, phone_number=phone_number_session, password=password_session)
+        id_category = request.GET.get('category')
+        transactions = UserTransaction.objects.filter(user=user, category_id=id_category)
+        count = transactions.count()
+        return JsonResponse({'count': count})
+    else:
+        return JsonResponse({'error': 'Session data not found'}, status=400)
+
+def delete_transaction(request):
+    id_user = request.GET.get('id')
+    phone_number_session = request.session['phone_number']
+    password_session = request.session['password']
+    user = User.objects.get(phone_number=phone_number_session, password=password_session)
+    transaction = UserTransaction.objects.get(user=user, id=id_user)
+    transaction.delete()
+    return render(request, 'index.html')
+
+
+def edit_transaction(request):
+    if request.method == "POST":
+        id_user = request.GET.get('id')
+        amount = float(amount)
+        type_transaction = int(type_transaction)
+        description = request.POST.get("description", None)
+        category_id = request.POST.get("category", None)
+        phone_number_session = request.session['phone_number']
+        password_session = request.session['password']
+
+        user = User.objects.get(phone_number=phone_number_session, password=password_session)
+        transaction = UserTransaction.objects.get(user=user, id=id_user)
+
+
+        category = None
+        """
+        Чтобы избежать этой ошибки, нужно либо инициализировать category заранее, либо убедиться, 
+        что она всегда будет иметь значение до того, как будет использоваться в коде.
+        """
+        if category_id:
+            category = get_object_or_404(Category, pk=category_id)
+            transaction.category = category
+
+        transaction.amount = amount
+        transaction.date = datetime.now().replace(second=0, microsecond=0)
+        transaction.description = description
+        transaction.type = type_transaction
+        transaction.save()
+
+        return redirect('index')
+    return render(request, "index.html")
