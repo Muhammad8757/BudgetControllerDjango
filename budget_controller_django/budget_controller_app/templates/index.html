@@ -29,12 +29,37 @@
         font-size: 3.5rem;
       }
     }
-  </style>
-
+  </style> 
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  
+  
+  
   <!-- Custom styles for this template -->
   <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
 </head>
 <body class="d-flex flex-column h-100">
+
+
+
+
+      </div>
+    </div>
+  </div>
+  
+
+  
+
+
+
+
+
 
 <header>
   <!-- Fixed navbar -->
@@ -153,6 +178,8 @@
 </div>
 
 
+
+
 <!-- Begin page content -->
 <div class="content" style="padding-top: 70px;">
   <div class="container">
@@ -162,7 +189,7 @@
         <i class="fas fa-sync"></i> Обновить историю
       </button>
     </div>
-    <div id="refreshHistoryBtn" class="table-responsive">
+    <div class="table-responsive">
       <table class="table table-striped custom-table">
         <thead>
           <tr>
@@ -192,87 +219,110 @@
             <td>{{ transaction.date }}</td>
             <td>{{ transaction.description }}</td>
             <td>
-              <!-- Modal -->
-              <div class="modal fade" id="confirmDeleteModal-{{ transaction.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ transaction.id }}" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="confirmDeleteModalLabel-{{ transaction.id }}">Подтверждение удаления</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      Вы уверены, что хотите удалить транзакцию?
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                      <a href="{% url 'delete_transaction' %}?id={{ transaction.id }}" class="btn btn-danger">Удалить</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="editTransactionModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editTransactionModalLabel">Изменить транзакцию</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="editTransactionForm" action="{% url 'edit_transaction' %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" id="transactionId" name="id" value="">
-                                <div class="form-group">
-                                    <label for="transactionType">Тип</label>
-                                    <select class="form-control" id="transactionType" name="type" required>
-                                        <option value="">Выбрать</option>
-                                        <option value="0">Расход</option>
-                                        <option value="1">Доход</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="transactionAmount">Сумма</label>
-                                    <input type="text" class="form-control" id="transactionAmount" name="amount" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="transactionCategory">Категория</label>
-                                    <select class="form-control" id="transactionCategory" name="category">
-                                        <option value="">Выберите категорию</option>
-                                        <option value="1">Жилье</option>
-                                        <option value="2">Транспорт</option>
-                                        <option value="3">Медицина</option>
-                                        <option value="4">Образование</option>
-                                        <option value="5">Питание</option>
-                                        <!-- Добавьте другие категории по мере необходимости -->
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="transactionDescription">Описание</label>
-                                    <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
-                                </div>
-                                <a href="{% url 'edit_transaction' %}?id={{ transaction.id }}&amount={{ transaction.amount }}&type={{ transaction.type }}&category={{ transaction.category.id }}&description={{ transaction.description }}" class="btn btn-primary" id="edit-transactionId">Сохранить</a>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-              <a href="#" class="btn btn-sm btn-primary edit-transaction" data-toggle="modal" data-target="#editTransactionModal" data-id="{{ transaction.id }}" data-amount="{{ transaction.amount }}" data-type="{{ transaction.type }}" data-category="{{ transaction.category.id }}" data-description="{{ transaction.description }}">Изменить</a>
-              <a href="#" class="btn btn-sm btn-danger delete-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ transaction.id }}">Удалить</a>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTransactionModal"
+                onclick="loadTransactionData('{{ transaction.id }}', '{{ transaction.amount }}', '{{ transaction.type }}', '{{ transaction.category.id }}', '{{ transaction.description }}')">
+                Изменить
+              </button>
+              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ transaction.id }}">
+                Удалить
+              </button>
             </td>
           </tr>
+
+          <!-- Confirm Delete Modal -->
+          <div class="modal fade" id="confirmDeleteModal-{{ transaction.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ transaction.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeleteModalLabel-{{ transaction.id }}">Подтверждение удаления</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Вы уверены, что хотите удалить транзакцию?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                  <a href="{% url 'delete_transaction' %}?id={{ transaction.id }}" class="btn btn-danger">Удалить</a>
+                </div>
+              </div>
+            </div>
+          </div>
           {% endwith %}
-          {% empty %}
-          <tr>
-            <td colspan="6">Нет доступных транзакций.</td>
-          </tr>
           {% endfor %}
-        </tbody>        
+        </tbody>
       </table>
     </div>
   </div>
 </div>
+
+
+
+
+<script>
+  function loadTransactionData(id, amount, type, category, description) {
+          console.log("Loading transaction data:", id, amount, type, category, description);
+    document.getElementById('transactionId').value = id;
+    document.getElementById('transactionAmount').value = amount;
+    document.getElementById('transactionType').value = type;
+    document.getElementById('transactionCategory').value = category;
+    document.getElementById('transactionDescription').value = description;
+  }
+</script>
+
+
+
+<!-- Edit Transaction Modal -->
+<div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="editTransactionModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editTransactionModalLabel">Изменить транзакцию</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="editTransactionForm" action="{% url 'edit_transaction' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" id="transactionId" name="id" value="">
+          <div class="form-group">
+            <label for="transactionType">Тип</label>
+            <select class="form-control" id="transactionType" name="type" required>
+              <option value="">Выбрать</option>
+              <option value="0">Расход</option>
+              <option value="1">Доход</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="transactionAmount">Сумма</label>
+            <input type="text" class="form-control" id="transactionAmount" name="amount" required>
+          </div>
+          <div class="form-group">
+            <label for="transactionCategory">Категория</label>
+            <select class="form-control" id="transactionCategory" name="category">
+              <option value="">Выберите категорию</option>
+              <option value="1">Жилье</option>
+              <option value="2">Транспорт</option>
+              <option value="3">Медицина</option>
+              <option value="4">Образование</option>
+              <option value="5">Питание</option>
+              <!-- Добавьте другие категории по мере необходимости -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="transactionDescription">Описание</label>
+            <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 
 <footer class="footer mt-auto py-3 bg-light">
@@ -281,20 +331,17 @@
   </div>
 </footer>
 
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-<script src="{% static 'js/popper.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
 
 
 <script>
   // Сброс формы добавления транзакции при загрузке страницы
   document.addEventListener('DOMContentLoaded', function() {
       document.getElementById("addTransactionForm").reset();
+  });
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById("editTransactionForm").reset();
   });
 
   $(document).ready(function() {
@@ -306,9 +353,6 @@
           $('#confirmDeleteLink').attr('href', deleteUrl);
           $('#confirmDeleteModal').modal('show');
       });
-
-
-
       // Обновление истории транзакций по клику на кнопку "Обновить"
       function loadHistory() {
         fetch('{% url "get_history" %}')
@@ -322,20 +366,20 @@
             .catch(error => console.error('Error:', error));
       }
 
-      loadHistory();
+      document.getElementById('refreshHistoryBtn').addEventListener('click', function() {
+        loadHistory();
+    });
 
 
-      document.getElementById('refreshHistoryBtn').addEventListener('click', loadHistory);
+    document.addEventListener('DOMContentLoaded', function() {
+    // Добавляем обработчик события для закрытия модального окна
+    document.getElementById('editTransactionModal').addEventListener('hidden.bs.modal', function() {
+        // Вызываем функцию loadHistory() после закрытия модального окна
+        loadHistory();
+    });
+});
 
       document.getElementById('saveTransactionBtn').addEventListener('click', loadHistory);
-
-      function loadTransactionData(id, amount, type, category, description) {
-    document.getElementById('transactionId-' + id).value = id;
-    document.getElementById('transactionAmount-' + id).value = amount;
-    document.getElementById('transactionType-' + id).value = type;
-    document.getElementById('transactionCategory-' + id).value = category;
-    document.getElementById('transactionDescription-' + id).value = description;
-}
 
       
       document.getElementById('user').addEventListener('click', function() {
@@ -356,12 +400,11 @@
             console.error('Error:', error);
         });
 });
-  });
+  });  
+</script> 
 
   
 </script>
 
 
   
-</body>
-</html>

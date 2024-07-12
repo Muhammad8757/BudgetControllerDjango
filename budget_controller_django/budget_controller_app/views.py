@@ -141,7 +141,7 @@ def search_description(request):
     user = User.objects.get(phone_number=phone_number_session, password=password_session)
     query = request.GET.get('q')
     if query:
-        results = UserTransaction.objects.filter(user=user,description=query)
+        results = UserTransaction.objects.filter(user=user,description__icontains=query)
     else:
         results = User.objects.none()
     
@@ -191,11 +191,11 @@ def delete_transaction(request):
 
 def edit_transaction(request):
     if request.method == "POST":
-        transaction_id = request.GET.get('id')
-        amount = float(request.GET.get("amount", 0))
-        type_transaction = int(request.GET.get("type", 0))
-        description = request.GET.get("description", None)
-        category_id = request.GET.get("category", None)
+        transaction_id = request.POST.get('id')
+        amount = float(request.POST.get("amount", 0))
+        type_transaction = int(request.POST.get("type", 0))
+        description = request.POST.get("description", None)
+        category_id = request.POST.get("category", None)
         # Retrieve user based on session data (example assuming session management)
         phone_number_session = request.session.get('phone_number')
         password_session = request.session.get('password')
@@ -204,13 +204,11 @@ def edit_transaction(request):
             try:
                 user = User.objects.get(phone_number=phone_number_session, password=password_session)
             except User.DoesNotExist:
-                messages.error(request, "Пользователь не найден.")
                 return redirect('index')
 
             try:
                 transaction = UserTransaction.objects.get(user=user, id=transaction_id)
             except UserTransaction.DoesNotExist:
-                messages.error(request, "Транзакция не найдена.")
                 return redirect('login')
 
             # Update transaction details
@@ -223,7 +221,6 @@ def edit_transaction(request):
             transaction.description = description
             transaction.type = type_transaction
             transaction.save()
-            messages.success(request, "Транзакция успешно изменена.")
         
         else:
             messages.error(request, "Пользователь не авторизован.")
