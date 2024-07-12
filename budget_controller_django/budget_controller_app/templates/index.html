@@ -29,6 +29,7 @@
         font-size: 3.5rem;
       }
     }
+
   </style> 
   <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -353,8 +354,28 @@
           $('#confirmDeleteLink').attr('href', deleteUrl);
           $('#confirmDeleteModal').modal('show');
       });
+
       // Обновление истории транзакций по клику на кнопку "Обновить"
-      function loadHistory() {
+      function loadHistoryindex() {
+    // Проверяем текущий URL
+        if (window.location.href === 'http://127.0.0.1:8000/' || window.location.href === 'http://127.0.0.1:8000/login' || window.location.href === 'http://127.0.0.1:8000/add_transaction' || window.location.href.startsWith('http://127.0.0.1:8000/delete_transaction?id=')) {
+            fetch('{% url "get_history" %}')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.querySelector('.table-responsive').innerHTML;
+                    document.querySelector('.table-responsive').innerHTML = newContent;
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            console.log('This function should only be called on http://127.0.0.1:8000/');
+        }
+    }
+
+    loadHistoryindex()
+
+    function loadHistory() {
         fetch('{% url "get_history" %}')
             .then(response => response.text())
             .then(html => {
@@ -371,18 +392,12 @@
     });
 
 
-    document.addEventListener('DOMContentLoaded', function() {
-    // Добавляем обработчик события для закрытия модального окна
-    document.getElementById('editTransactionModal').addEventListener('hidden.bs.modal', function() {
-        // Вызываем функцию loadHistory() после закрытия модального окна
+      document.getElementById('saveTransactionBtn').addEventListener('click', function() {
         loadHistory();
     });
-});
 
-      document.getElementById('saveTransactionBtn').addEventListener('click', loadHistory);
 
-      
-      document.getElementById('user').addEventListener('click', function() {
+    document.getElementById('user').addEventListener('click', function() {
     fetch('{% url "about_user" %}')
         .then(response => response.text())
         .then(html => {
@@ -400,6 +415,7 @@
             console.error('Error:', error);
         });
 });
+    
   });  
 </script> 
 
