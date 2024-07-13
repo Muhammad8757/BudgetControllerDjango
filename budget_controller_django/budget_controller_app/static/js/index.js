@@ -84,9 +84,77 @@ $(document).ready(function() {
             .catch(error => console.error('Error:', error));
     }
 
+
+    function loadCategory() {
+        fetch(getCategoryUrl)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.querySelector('#categoryId').innerHTML;
+                document.querySelector('#categoryId').innerHTML = newContent;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+
+    document.getElementById('category').addEventListener('click', function() {
+        loadCategory();
+    });
+
+
+    function loadCategory() {
+        fetch(getCategoryUrl)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.querySelector('#categoryId').innerHTML;
+                document.querySelector('#categoryId').innerHTML = newContent;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+
+    document.getElementById('transactionCategory').addEventListener('click', function() {
+        loadCategory();
+    });
+
+    function addCategoryid(categoryName) {
+        const formData = new FormData();
+        formData.append('category_name', categoryName);
+    
+        fetch('/add_category/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Обработка успешного ответа, если необходимо
+            console.log('Успешно добавлена новая категория:', html);
+            
+            // Предположим, что вы хотите обновить список категорий после добавления
+            loadCategory(); // Перезагрузка списка категорий после добавления новой
+        })
+        .catch(error => {
+            console.error('Ошибка при добавлении категории:', error);
+        });
+    }
+    
+    // Пример обработчика события для кнопки добавления категории
+    document.getElementById('addCategoryButton').addEventListener('click', function() {
+        const categoryName = document.getElementById('newCategoryName').value;
+        addCategoryid(categoryName); // Вызов функции для добавления категории
+    });
+    
+
+
+
     document.getElementById('refreshHistoryBtn').addEventListener('click', function() {
         loadHistory();
     });
+
+
 
     document.getElementById('saveTransactionBtn').addEventListener('click', function() {
         loadHistory();
@@ -106,4 +174,49 @@ $(document).ready(function() {
                 console.error('Error:', error);
             });
     });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const transactionCategorySelect = document.getElementById('transactionCategory');
+
+    // Функция для загрузки категорий из Django
+    function loadCategories() {
+        fetch(getHistoryUrljson)  // URL для получения категорий
+            .then(response => response.json())
+            .then(data => {
+                // Очистить текущие опции в select
+                transactionCategorySelect.innerHTML = '';
+
+                // Добавить первую опцию
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Выберите категорию';
+                transactionCategorySelect.appendChild(defaultOption);
+
+                // Добавить остальные категории
+                data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    transactionCategorySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Ошибка загрузки категорий:', error));
+    }
+
+    // Вызвать функцию загрузки категорий при загрузке страницы
+    loadCategories();
 });

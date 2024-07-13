@@ -22,4 +22,7 @@ urlpatterns = [
     path('clear_delete_message', views.clear_delete_message, name='clear_delete_message'),
     path('sorted_by_description', views.sorted_by_description, name='sorted_by_description'),
     path('get_balance', views.get_balance, name='get_balance'),
+    path('get_category', views.get_category, name='get_category'),
+    path('get_categoriesjson', views.get_categoriesjson, name='get_categoriesjson'),
+    path('add_category_id', views.add_category_id, name='add_category_id'),
 ]

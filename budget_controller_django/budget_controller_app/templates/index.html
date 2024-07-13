@@ -34,40 +34,24 @@
             <a href="#about" class="nav-link" data-bs-toggle="modal" data-bs-target="#aboutModal" id="user">Профиль</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a id="category" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Категории
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li>
-                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=1">Жилье</a>
-                <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" data-bs-target="#confirmDeleteModal">
-                  Удалить
-                </button>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=2">Транспорт</a>
-                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
-                  Удалить
-                </button>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=3">Медицина</a>
-                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
-                  Удалить
-                </button>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=4">Образование</a>
-                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
-                  Удалить
-                </button>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=5">Питание</a>
-                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
-                  Удалить
-                </button>
-              </li>
+              <div class="modal-body">
+                <!-- Форма для добавления категории -->
+                <table>
+                    <tbody id="categoryId">
+                        {% for category in categories %}
+                        <tr>
+                            <td>
+                                <a href="sorted_by_category?id={{ category.id }}" class="category-link">{{ category.name }}</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Добавить категорию</a></li>
               <li><a class="dropdown-item" href="#">Удалить категорию</a></li>
@@ -127,13 +111,26 @@
       </div>
       <div class="modal-body">
         <!-- Форма для добавления категории -->
-        <form method="post" action="#">
+        <table>
+            <tbody id="categoryId">
+                {% for category in categories %}
+                <tr>
+                    <td>
+                        <a href="#" class="category-link" data-category-id="{{ category.id }}">{{ category.name }}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+        <form method="get">
           {% csrf_token %}
           <div class="form-group">
             <label for="categoryName">Название категории:</label>
             <input type="text" class="form-control" id="categoryName" name="categoryName" required>
           </div>
-          <button type="submit" class="btn btn-primary">Добавить категорию</button>
+          <button id="addCategoryid" type="submit" class="btn btn-primary">Добавить категорию</button>
         </form>
       </div>
     </div>
@@ -190,11 +187,6 @@
                         <label for="transactionCategory">Категория</label>
                         <select class="form-control" id="transactionCategory" name="category">
                             <option value="">Выберите категорию</option>
-                            <option value="1">Жилье</option>
-                            <option value="2">Транспорт</option>
-                            <option value="3">Медицина</option>
-                            <option value="4">Образование</option>
-                            <option value="5">Питание</option>
                             <!-- Добавьте другие категории по мере необходимости -->
                         </select>
                     </div>
@@ -309,7 +301,7 @@
             <label for="transactionType">Тип</label>
             <select class="form-control" id="transactionType" name="type" value="{{ transaction.type }}" required>
               <option value="">Выбрать</option>
-              <option value="0"       >Расход</option>
+              <option value="0">Расход</option>
               <option value="1">Доход</option>
             </select>
           </div>
@@ -346,6 +338,9 @@
   var getHistoryUrl = "{% url 'get_history' %}";
   var getBalanceUrl = "{% url 'get_balance' %}";
   var aboutUserUrl = "{% url 'about_user' %}";
+  var getCategoryUrl ="{% url 'get_category' %}";
+  var getHistoryUrljson ="{% url 'get_categoriesjson' %}";
+  var addCategoryid = "{% url 'add_category_id' %}";
 </script>
 
 {% include 'footer.html' %}

@@ -397,7 +397,19 @@ def get_balance(request):
     return render(request, "index.html", context)
 
 
+def get_category(request):
+    category = Category.objects.all()
+    context={
+        "categories":category
+    }
+    return render(request, "index.html", context)
 
-def test(request):
-    data_from = {"key": "value"}
-    return render(request, "index.html", {'data': data_from})
+def get_categoriesjson(request):
+    categories = Category.objects.all()  # Получаем все категории из базы данных
+    data = list(categories.values('id', 'name'))  # Преобразуем категории в список словарей
+    return JsonResponse(data, safe=False)
+
+def add_category_id(request):
+    name = request.POST.get('id')
+    Category.objects.create(name=name)
+    return redirect("index")
