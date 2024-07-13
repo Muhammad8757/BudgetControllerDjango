@@ -76,6 +76,7 @@ def add_transaction(request):
                     return HttpResponse("User not authenticated.")
 
                 category = None
+
                 """
                 Чтобы избежать этой ошибки, нужно либо инициализировать category заранее, либо убедиться, 
                 что она всегда будет иметь значение до того, как будет использоваться в коде.
@@ -92,7 +93,7 @@ def add_transaction(request):
                     user=user
                 )
 
-                return render(request, "index.html")
+                return redirect('index')
             else:
                 return HttpResponse("User not authenticated.")
         except:

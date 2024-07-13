@@ -26,7 +26,6 @@ $(document).ready(function() {
         if (
             window.location.href === 'http://127.0.0.1:8000/' 
             || window.location.href === 'http://127.0.0.1:8000/login' 
-            || window.location.href === 'http://127.0.0.1:8000/add_transaction' 
             || window.location.href.startsWith('http://127.0.0.1:8000/delete_transaction?id=')
             ) {
             fetch(getHistoryUrl)
