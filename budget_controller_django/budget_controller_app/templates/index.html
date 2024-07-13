@@ -1,63 +1,15 @@
 {% load static %}
-<!doctype html>
-<html lang="en" class="h-100">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-  <meta name="generator" content="Hugo 0.84.0">
-  <title>Index</title>
+{% include 'header.html' %}
 
-  <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sticky-footer-navbar/">
+<link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sticky-footer-navbar/">
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
 
-  <!-- Bootstrap core CSS -->
-  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-  
-
-  <style>
-    .bd-placeholder-img {
-      font-size: 1.125rem;
-      text-anchor: middle;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      user-select: none;
-    }
-
-    @media (min-width: 768px) {
-      .bd-placeholder-img-lg {
-        font-size: 3.5rem;
-      }
-    }
-
-  </style> 
-  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-  <script src="{% static 'js/popper.min.js' %}"></script>
-  <script src="{% static 'js/bootstrap.min.js' %}"></script>
-  <script src="{% static 'js/main.js' %}"></script>
-  
-  
-  
-  <!-- Custom styles for this template -->
-  <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
-</head>
-<body class="d-flex flex-column h-100">
-
-
-
-
-      </div>
-    </div>
-  </div>
-  
-
-  
-
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/index.js' %}"></script>
 
 
 
@@ -86,28 +38,108 @@
               Категории
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=1">Жилье</a></li>
-              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=2">Транспорт</a></li>
-              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=3">Медицина</a></li>
-              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=4">Образование</a></li>
-              <li><a class="dropdown-item" href="{% url 'filter_by_category' %}?category=5">Питание</a></li>
-              <!-- <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Добавить категорию</a></li>
-              <li><a class="dropdown-item" href="#" >Удалить категорию</a></li> -->
+              <li>
+                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=1">Жилье</a>
+                <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" data-bs-target="#confirmDeleteModal">
+                  Удалить
+                </button>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=2">Транспорт</a>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
+                  Удалить
+                </button>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=3">Медицина</a>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
+                  Удалить
+                </button>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=4">Образование</a>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
+                  Удалить
+                </button>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'filter_by_category' %}?category=5">Питание</a>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">
+                  Удалить
+                </button>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Добавить категорию</a></li>
+              <li><a class="dropdown-item" href="#">Удалить категорию</a></li>
             </ul>
-            <li class="nav-item"><a href='{% url "add_transaction" %}' class="nav-link" data-toggle="modal" data-target="#addTransactionModal">Добавить</a></li>
           </li>
-          
+          <li class="nav-item"><!-- Open new li tag here -->
+            <a href='{% url "add_transaction" %}' class="nav-link" data-bs-toggle="modal" 
+            data-bs-target="#addTransactionModal">Добавить</a>
+          </li><!-- Close the li tag properly -->
         </ul>
         <form class="d-flex" action='{% url "search_description" %}' method="GET">
-          <input class="form-control me-2" type="search" name="q" placeholder="Поиск..." aria-label="Search">
+          <input class="form-control me-2" type="search" name="q" placeholder="Поиск..." aria-label="Search" 
+         pattern=".{2,}" title="Введите как минимум два символа">
           <button class="btn btn-outline-success" type="submit">Поиск</button>
-          
         </form>
       </div>
     </div>
   </nav>
 </header>
+
+
+
+<!-- Модальное окно подтверждения удаления категории -->
+<div class="modal fade" id="confirmDeleteModal-{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel-{{ category.id }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteModalLabel-{{ category.id }}">Подтвердите удаление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Вы уверены, что хотите удалить эту категорию?</p>
+        <form method="post" action="#">
+          {% csrf_token %}
+          <input type="hidden" name="category_id" value="{{ category.id }}">
+          <button type="submit" class="btn btn-danger">Удалить категорию</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCategoryModalLabel">Добавить категорию</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Форма для добавления категории -->
+        <form method="post" action="#">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="categoryName">Название категории:</label>
+            <input type="text" class="form-control" id="categoryName" name="categoryName" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Добавить категорию</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
@@ -123,7 +155,6 @@
                 <div class="aboutuser">
                     <h5 class="modal-title">Имя: {{ user_name }}</h5>
                     <h5 class="modal-title">Логин: {{ phone_number }}</h5>
-                    <h5 class="modal-title">Баланс: {{ amount }}</h5>
                 </div>
             </div>
         </div>
@@ -136,7 +167,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addTransactionModalLabel">Добавить</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -179,8 +210,6 @@
 </div>
 
 
-
-
 <!-- Begin page content -->
 <div class="content" style="padding-top: 70px;">
   <div class="container">
@@ -189,17 +218,20 @@
       <button id="refreshHistoryBtn" class="btn btn-primary" title="Обновить историю">
         <i class="fas fa-sync"></i> Обновить историю
       </button>
+      <div class="balance">
+        <i style="margin-left: 900px;">Баланс: {{ balance }}</i>
+      </div>
     </div>
     <div class="table-responsive">
       <table class="table table-striped custom-table">
         <thead>
           <tr>
             <th scope="col">№</th>
-            <th scope="col">Сумма</th>
-            <th scope="col">Тип</th>
-            <th scope="col">Категория</th>
-            <th scope="col">Дата</th>
-            <th scope="col">Описание</th>
+            <th scope="col"><a href="{% url 'sorted_by_amount' %}">Сумма</a></th>
+            <th scope="col"><a href="{% url 'sorted_by_type' %}">Тип</a></th>
+            <th scope="col"><a href="{% url 'sorted_by_category' %}">Категория</a></th>
+            <th scope="col"><a href="{% url 'sorted_by_date' %}">Дата</a></th>
+            <th scope="col"><a href="{% url 'sorted_by_description' %}">Описание</a></th>
             <th scope="col">Действия</th>
           </tr>
         </thead>
@@ -248,6 +280,7 @@
               </div>
             </div>
           </div>
+
           {% endwith %}
           {% endfor %}
         </tbody>
@@ -259,20 +292,6 @@
 
 
 
-<script>
-  function loadTransactionData(id, amount, type, category, description) {
-          console.log("Loading transaction data:", id, amount, type, category, description);
-    document.getElementById('transactionId').value = id;
-    document.getElementById('transactionAmount').value = amount;
-    document.getElementById('transactionType').value = type;
-    document.getElementById('transactionCategory').value = category;
-    document.getElementById('transactionDescription').value = description;
-  }
-</script>
-
-
-
-<!-- Edit Transaction Modal -->
 <div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="editTransactionModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -285,22 +304,22 @@
       <div class="modal-body">
         <form id="editTransactionForm" action="{% url 'edit_transaction' %}" method="post">
           {% csrf_token %}
-          <input type="hidden" id="transactionId" name="id" value="">
+          <input type="hidden" id="transactionId" name="id" value="{{ transaction.id }}">
           <div class="form-group">
             <label for="transactionType">Тип</label>
-            <select class="form-control" id="transactionType" name="type" required>
+            <select class="form-control" id="transactionType" name="type" value="{{ transaction.type }}" required>
               <option value="">Выбрать</option>
-              <option value="0">Расход</option>
+              <option value="0"       >Расход</option>
               <option value="1">Доход</option>
             </select>
           </div>
           <div class="form-group">
             <label for="transactionAmount">Сумма</label>
-            <input type="text" class="form-control" id="transactionAmount" name="amount" required>
+            <input type="text" class="form-control" id="transactionAmount" name="amount" value="{{ transaction.amount }}" required>
           </div>
           <div class="form-group">
             <label for="transactionCategory">Категория</label>
-            <select class="form-control" id="transactionCategory" name="category">
+            <select class="form-control" id="transactionCategory" name="category" value="{{ transaction.category.id }}">
               <option value="">Выберите категорию</option>
               <option value="1">Жилье</option>
               <option value="2">Транспорт</option>
@@ -312,7 +331,7 @@
           </div>
           <div class="form-group">
             <label for="transactionDescription">Описание</label>
-            <textarea class="form-control" id="transactionDescription" name="description" rows="3"></textarea>
+            <textarea class="form-control" id="transactionDescription"  name="description" value="{{ transaction.description }}" rows="3"></textarea>
           </div>
           <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
@@ -323,104 +342,10 @@
 
 
 
-
-
-
-<footer class="footer mt-auto py-3 bg-light">
-  <div class="container">
-    <span class="text-muted">Place sticky footer content here.</span>
-  </div>
-</footer>
-
-
-
 <script>
-  // Сброс формы добавления транзакции при загрузке страницы
-  document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById("addTransactionForm").reset();
-  });
-
-
-  document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById("editTransactionForm").reset();
-  });
-
-  $(document).ready(function() {
-      // Обработчик кнопки удаления транзакции
-      $('.delete-btn').on('click', function(event) {
-          event.preventDefault();
-          var transactionId = $(this).data('id');
-          var deleteUrl = $('#confirmDeleteLink').attr('href') + '?id=' + transactionId;
-          $('#confirmDeleteLink').attr('href', deleteUrl);
-          $('#confirmDeleteModal').modal('show');
-      });
-
-      // Обновление истории транзакций по клику на кнопку "Обновить"
-      function loadHistoryindex() {
-    // Проверяем текущий URL
-        if (window.location.href === 'http://127.0.0.1:8000/' || window.location.href === 'http://127.0.0.1:8000/login' || window.location.href === 'http://127.0.0.1:8000/add_transaction' || window.location.href.startsWith('http://127.0.0.1:8000/delete_transaction?id=')) {
-            fetch('{% url "get_history" %}')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newContent = doc.querySelector('.table-responsive').innerHTML;
-                    document.querySelector('.table-responsive').innerHTML = newContent;
-                })
-                .catch(error => console.error('Error:', error));
-        } else {
-            console.log('This function should only be called on http://127.0.0.1:8000/');
-        }
-    }
-
-    loadHistoryindex()
-
-    function loadHistory() {
-        fetch('{% url "get_history" %}')
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newContent = doc.querySelector('.table-responsive').innerHTML;
-                document.querySelector('.table-responsive').innerHTML = newContent;
-            })
-            .catch(error => console.error('Error:', error));
-      }
-
-      document.getElementById('refreshHistoryBtn').addEventListener('click', function() {
-        loadHistory();
-    });
-
-
-      document.getElementById('saveTransactionBtn').addEventListener('click', function() {
-        loadHistory();
-    });
-
-
-    document.getElementById('user').addEventListener('click', function() {
-    fetch('{% url "about_user" %}')
-        .then(response => response.text())
-        .then(html => {
-            // Создаем временный элемент, чтобы вставить в него HTML-код и вытащить нужную часть
-            const tempElement = document.createElement('div');
-            tempElement.innerHTML = html;
-            
-            // Находим элемент с классом 'aboutuser' внутри загруженного HTML-кода
-            const aboutUserContent = tempElement.querySelector('.aboutuser').innerHTML;
-            
-            // Обновляем содержимое нужного элемента на странице
-            document.querySelector('.aboutuser').innerHTML = aboutUserContent;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-});
-    
-  });  
-</script> 
-
-  
+  var getHistoryUrl = "{% url 'get_history' %}";
+  var getBalanceUrl = "{% url 'get_balance' %}";
+  var aboutUserUrl = "{% url 'about_user' %}";
 </script>
 
-
-  
+{% include 'footer.html' %}

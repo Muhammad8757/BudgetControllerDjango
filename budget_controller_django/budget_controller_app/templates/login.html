@@ -1,14 +1,8 @@
 {% load static %}
+{% include 'header.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
+
     <link rel="stylesheet" href="{% static 'css/login_style.css' %}" rel="stylesheet">
-</head>
-<body>
     <h2>Login</h2>
     <form method="post" action="">
         {% csrf_token %}
@@ -19,5 +13,5 @@
             <p>Don't have an account? <a href="{% url 'sign_up' %}" class="signup-link">Sign up here</a></p>
         </div>
     </form>
-</body>
-</html>
+    
+{% include 'footer.html' %}

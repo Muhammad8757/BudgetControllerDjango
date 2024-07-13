@@ -1,0 +1,15 @@
+{% load static %}
+{% include 'header.html' %}
+    <!-- Подключаем Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/error.css' %}" rel="stylesheet">
+
+</head>
+<body>
+    <div class="error-container">
+        <h1>Произошла ошибка!</h1>
+        <p>Извините, произошла ошибка. Пожалуйста, попробуйте снова позже.</p>
+        <a href="/" class="btn btn-primary mt-3">На главную</a>
+    </div>
+
+{% include 'footer.html' %}
