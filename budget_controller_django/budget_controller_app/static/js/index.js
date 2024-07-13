@@ -49,7 +49,7 @@ $(document).ready(function() {
         || window.location.href === 'http://127.0.0.1:8000/login' 
         || window.location.href === 'http://127.0.0.1:8000/add_transaction' 
         || window.location.href.startsWith('http://127.0.0.1:8000/delete_transaction?id=')
-        || window.location.href.startsWith('http://127.0.0.1:8000/filter_by_category?category=')
+        || window.location.href.startsWith('http://127.0.0.1:8000/sorted_by_category?id=')
         || window.location.href === "http://127.0.0.1:8000/sorted_by_amount"
         || window.location.href === "http://127.0.0.1:8000/sorted_by_type"
         || window.location.href === "http://127.0.0.1:8000/sorted_by_category"
@@ -124,7 +124,7 @@ $(document).ready(function() {
         const formData = new FormData();
         formData.append('category_name', categoryName);
     
-        fetch('/add_category/', {
+        fetch(add_category_id, {
             method: 'POST',
             body: formData
         })
@@ -142,9 +142,12 @@ $(document).ready(function() {
     }
     
     // Пример обработчика события для кнопки добавления категории
-    document.getElementById('addCategoryButton').addEventListener('click', function() {
-        const categoryName = document.getElementById('newCategoryName').value;
-        addCategoryid(categoryName); // Вызов функции для добавления категории
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('addCategoryButton').addEventListener('click', function() {
+            console.log(document.getElementById('categoryName').value)
+            const categoryName = document.getElementById('categoryName').value;
+            addCategoryid(categoryName); // Вызов функции для добавления категории
+        });
     });
     
 

@@ -12,7 +12,17 @@
 <script src="{% static 'js/index.js' %}"></script>
 
 
+<style>
+  .category-link {
+    color: #212529; /* Цвет текста ссылки (синий) */
+    text-decoration: none; /* Убираем подчеркивание ссылки */
+    transition: color 0.3s ease; /* Плавное изменение цвета текста */
+}
 
+.category-link:hover {
+    color: #212530; /* Цвет текста при наведении (более темный синий) */
+}
+</style>
 
 <header>
   <!-- Fixed navbar -->
@@ -100,42 +110,33 @@
 
 
 
-<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<!-- Кнопка для открытия модального окна -->
+
+<!-- Модальное окно для добавления категории -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addCategoryModalLabel">Добавить категорию</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <h5 class="modal-title" id="addCategoryModalLabel">Добавление новой категории</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <!-- Форма для добавления категории -->
-        <table>
-            <tbody id="categoryId">
-                {% for category in categories %}
-                <tr>
-                    <td>
-                        <a href="#" class="category-link" data-category-id="{{ category.id }}">{{ category.name }}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    
-        <form method="get">
-          {% csrf_token %}
+      <form id="addCategoryForm" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
           <div class="form-group">
             <label for="categoryName">Название категории:</label>
             <input type="text" class="form-control" id="categoryName" name="categoryName" required>
           </div>
-          <button id="addCategoryid" type="submit" class="btn btn-primary">Добавить категорию</button>
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить категорию</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+
 
 
 

@@ -11,3 +11,13 @@
       font-size: 3.5rem;
     }
   }
+
+  .category-link {
+    color: #007bff; /* Цвет текста ссылки (синий) */
+    text-decoration: none; /* Убираем подчеркивание ссылки */
+    transition: color 0.3s ease; /* Плавное изменение цвета текста */
+}
+
+.category-link:hover {
+    color: #0056b3; /* Цвет текста при наведении (более темный синий) */
+}
