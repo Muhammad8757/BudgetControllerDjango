@@ -40,10 +40,11 @@ def login(request):
     if request.method == "POST":
         phone_number = request.POST.get("phone_number", None)
         password = request.POST.get("password", None)
+        password_hash = hasher(password)
         try:
-            User.objects.get(phone_number=phone_number, password=password)
+            User.objects.get(phone_number=phone_number, password=password_hash)
             request.session['phone_number'] = phone_number
-            request.session['password'] = password
+            request.session['password'] = password_hash
             return render(request, 'index.html')
         except User.DoesNotExist:
             return redirect('error_404')
@@ -102,7 +103,7 @@ def add_transaction(request):
 
 def filter_by_category(request):
     try:
-        choosen_category = request.GET.get("category", None)
+        choosen_category = request.GET.get("id", None)
         if choosen_category is not None:
             choosen_category = int(choosen_category)
         else:

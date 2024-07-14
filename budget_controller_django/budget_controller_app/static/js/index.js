@@ -45,17 +45,26 @@ $(document).ready(function() {
     loadHistoryindex();
 
     function get_balance() {
-        if (window.location.href === 'http://127.0.0.1:8000/' 
-        || window.location.href === 'http://127.0.0.1:8000/login' 
-        || window.location.href === 'http://127.0.0.1:8000/add_transaction' 
-        || window.location.href.startsWith('http://127.0.0.1:8000/delete_transaction?id=')
-        || window.location.href.startsWith('http://127.0.0.1:8000/sorted_by_category?id=')
-        || window.location.href === "http://127.0.0.1:8000/sorted_by_amount"
-        || window.location.href === "http://127.0.0.1:8000/sorted_by_type"
-        || window.location.href === "http://127.0.0.1:8000/sorted_by_category"
-        || window.location.href === "http://127.0.0.1:8000/sorted_by_date"
-        || window.location.href === "http://127.0.0.1:8000/sorted_by_description")
-        {
+        const url = window.location.href;
+        console.log("Current URL:", url);
+        const validUrls = [
+            'http://127.0.0.1:8000/',
+            'http://127.0.0.1:8000/login',
+            'http://127.0.0.1:8000/add_transaction',
+            'http://127.0.0.1:8000/sorted_by_amount',
+            'http://127.0.0.1:8000/sorted_by_type',
+            'http://127.0.0.1:8000/sorted_by_category',
+            'http://127.0.0.1:8000/sorted_by_date',
+            'http://127.0.0.1:8000/sorted_by_description'
+        ];
+    
+        const isValid = validUrls.includes(url) ||
+            url.startsWith('http://127.0.0.1:8000/delete_transaction?id=') ||
+            url.startsWith('http://127.0.0.1:8000/filter_by_category?id=');
+    
+        console.log("Is valid URL:", isValid);
+    
+        if (isValid) {
             fetch(getBalanceUrl)
                 .then(response => response.text())
                 .then(html => {
@@ -63,12 +72,14 @@ $(document).ready(function() {
                     const doc = parser.parseFromString(html, 'text/html');
                     const newContent = doc.querySelector('.balance').innerHTML;
                     document.querySelector('.balance').innerHTML = newContent;
+                    console.log("Balance updated.");
                 })
                 .catch(error => console.error('Error:', error));
         } else {
-            console.log('This function should only be called on http://127.0.0.1:8000/');
+            console.log('This function should only be called on specified URLs.');
         }
     }
+    
 
     get_balance();
 
@@ -178,18 +189,6 @@ $(document).ready(function() {
             });
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -55,7 +55,7 @@
                         {% for category in categories %}
                         <tr>
                             <td>
-                                <a href="sorted_by_category?id={{ category.id }}" class="category-link">{{ category.name }}</a>
+                                <a href="filter_by_category?id={{ category.id }}" class="category-link">{{ category.name }}</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -202,9 +202,41 @@
     </div>
 </div>
 
-
+<style>
+  .profile-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000; /* обеспечивает, что элемент будет сверху других */
+        }
+        .profile-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+          }
+        @media screen and (max-width: 768px) {
+        img.ribbon {
+          width: 50%; /* Адаптируем размер изображения для мобильных устройств */
+          height: auto;
+        }
+      }
+      
+</style>
+  
 <!-- Begin page content -->
 <div class="content" style="padding-top: 70px;">
+  <div class="container">
+    <div class="dropdown">
+      <div style="position: relative;">
+      <img src="{% static 'images/profile.png' %}" alt="Profile" class="profile-icon dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; top: 0; right: 0;">
+    </div>
+
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+            <a class="dropdown-item" href="#">Profile</a>
+        </div>
+    </div>
+  </div>
   <div class="container">
     <h2 class="mb-5">История</h2>
     <div class="mb-3">
@@ -212,7 +244,7 @@
         <i class="fas fa-sync"></i> Обновить историю
       </button>
       <div class="balance">
-        <i style="margin-left: 900px;">Баланс: {{ balance }}</i>
+        <i style="margin-left: 900px;">Баланс: </i>{{ balance }}
       </div>
     </div>
     <div class="table-responsive">
@@ -332,6 +364,10 @@
     </div>
   </div>
 </div>
+
+
+
+
 
 
 
