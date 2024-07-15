@@ -25,5 +25,6 @@ urlpatterns = [
     path('get_category', views.get_category, name='get_category'),
     path('get_categoriesjson', views.get_categoriesjson, name='get_categoriesjson'),
     path('add_category_id', views.add_category_id, name='add_category_id'),
-    path('push', views.push, name='push'),
+    path('delete_category_id', views.delete_category_id, name='delete_category_id'),
+    path('test', views.test, name='test'),
 ]

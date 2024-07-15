@@ -93,7 +93,7 @@ def add_transaction(request):
                     category=category,
                     user=user
                 )
-
+                
                 return redirect('index')
             else:
                 return HttpResponse("User not authenticated.")
@@ -416,5 +416,16 @@ def add_category_id(request):
     Category.objects.create(name=name)
     return redirect("index")
 
-def push(request):
+
+def delete_category_id(request):
+    id = request.POST.get('category')
+    category = Category.objects.get(id=id)
+    category.delete()
+    return redirect("index")
+
+
+
+def test(request):
+    # Ваш код создания транзакции здесь
+    # Пример успешного создания транзакции
     return render(request, "push.html")

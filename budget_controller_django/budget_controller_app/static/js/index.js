@@ -1,14 +1,5 @@
-function loadTransactionData(id, amount, type, category, description) {
-    console.log("Loading transaction data:", id, amount, type, category, description);
-    document.getElementById('transactionId').value = id;
-    document.getElementById('transactionAmount').value = amount;
-    document.getElementById('transactionType').value = type;
-    document.getElementById('transactionCategory').value = category;
-    document.getElementById('transactionDescription').value = description;
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("addTransactionForm").reset();
+    document.getElementById("addTransactionModal").reset();
 });
 
 $(document).ready(function() {
@@ -192,6 +183,74 @@ $(document).ready(function() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+    const transactionCategorySelect = document.getElementById('deleteTransactionCategory');
+
+    // Функция для загрузки категорий из Django
+    function deleteTransactionCategory() {
+        fetch(getHistoryUrljson)  // URL для получения категорий
+            .then(response => response.json())
+            .then(data => {
+                // Очистить текущие опции в select
+                transactionCategorySelect.innerHTML = '';
+
+                // Добавить первую опцию
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Выберите категорию';
+                transactionCategorySelect.appendChild(defaultOption);
+
+                // Добавить остальные категории
+                data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    transactionCategorySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Ошибка загрузки категорий:', error));
+    }
+
+    // Вызвать функцию загрузки категорий при загрузке страницы
+    deleteTransactionCategory();
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const transactionCategorySelect = document.getElementById('editTransactionCategory');
+
+    // Функция для загрузки категорий из Django
+    function loadCategories() {
+        fetch(getHistoryUrljson)  // URL для получения категорий
+            .then(response => response.json())
+            .then(data => {
+                // Очистить текущие опции в select
+                transactionCategorySelect.innerHTML = '';
+
+                // Добавить первую опцию
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Выберите категорию';
+                transactionCategorySelect.appendChild(defaultOption);
+
+                // Добавить остальные категории
+                data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    transactionCategorySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Ошибка загрузки категорий:', error));
+    }
+
+    // Вызвать функцию загрузки категорий при загрузке страницы
+    loadCategories();
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
     const transactionCategorySelect = document.getElementById('transactionCategory');
 
     // Функция для загрузки категорий из Django
@@ -221,4 +280,73 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Вызвать функцию загрузки категорий при загрузке страницы
     loadCategories();
+});
+
+
+// Функция для загрузки данных транзакции в модальное окно редактирования
+// Функция для загрузки данных транзакции в модальное окно редактирования
+function loadTransactionData(id, amount, type, categoryId, description) {
+    document.getElementById("editTransactionId").value = id;
+    document.getElementById("editTransactionAmount").value = amount;
+    document.getElementById("editTransactionCategory").value = categoryId;
+    document.getElementById("editTransactionDescription").value = description;
+
+    // Установка значения типа транзакции
+    if (type === 'Доход') {
+        $('#editTransactionType').val('1'); // Устанавливаем значение '1' для Дохода
+    } else {
+        $('#editTransactionType').val('0'); // Устанавливаем значение '0' для Расхода
+    }
+    console.log("Loading transaction data:", id, amount, type, categoryId, description);
+}
+
+// При клике на кнопку "Изменить" загружаем данные транзакции в модальное окно редактирования
+$(document).on("click", ".editTransactionModal", function () {
+    var transactionId = $(this).data('transaction-id');
+    var amount = $(this).data('amount');
+    var type = $(this).data('transaction-type'); // Предположим, что у вас есть атрибут data-transaction-type для определения типа транзакции
+    var categoryId = $(this).data('category-id');
+    var description = $(this).data('description');
+
+    loadTransactionData(transactionId, amount, type, categoryId, description);
+});
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Сброс формы при закрытии модального окна добавления транзакции
+    $('#addTransactionModal').on('hidden.bs.modal', function () {
+        document.getElementById("addTransactionForm").reset();
+    });
+
+    // Сброс формы при закрытии модального окна редактирования транзакции
+    $('#editTransactionModal').on('hidden.bs.modal', function () {
+        document.getElementById("editTransactionForm").reset();
+    });
+
+    // Очистка полей формы вручную при открытии модального окна добавления транзакции
+    $('#addTransactionModal').on('shown.bs.modal', function () {
+        document.getElementById("addTransactionForm").reset();
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+$('.toast').toast();
+
+    // Обработчик клика на кнопку для зеленого toast
+    $('#refreshHistoryBtn').click(function() {
+      // Показать зеленый toast
+      $('#greenToast').toast('show');
+    });
+
+    // Обработчик клика на кнопку для красного toast
+    $('#refreshHistoryBtn').click(function() {
+      // Показать красный toast
+      $('#redToast').toast('show');
+    });
 });

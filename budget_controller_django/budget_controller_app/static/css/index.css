@@ -40,8 +40,8 @@
   z-index: 1000; /* обеспечивает, что элемент будет сверху других */
 }
 .profile-icon {
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -51,3 +51,15 @@ width: 50%; /* Адаптируем размер изображения для �
 height: auto;
 }
 }
+
+
+.toast {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  min-width: 150px; /* Ширина уведомления */
+  padding: .75rem 1.25rem;
+  margin-bottom: 1rem; /* Отступ между уведомлениями */
+  border-radius: .25rem; /* Закругляем углы */
+}
+
