@@ -411,6 +411,10 @@ def get_categoriesjson(request):
     return JsonResponse(data, safe=False)
 
 def add_category_id(request):
-    name = request.POST.get('id')
+    name = request.POST.get('categoryName')
+    print(name)
     Category.objects.create(name=name)
     return redirect("index")
+
+def push(request):
+    return render(request, "push.html")

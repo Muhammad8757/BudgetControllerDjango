@@ -4,6 +4,7 @@
 <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sticky-footer-navbar/">
 <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
+<link href="{% static 'css/index.css' %}" rel="stylesheet">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
@@ -12,17 +13,34 @@
 <script src="{% static 'js/index.js' %}"></script>
 
 
-<style>
-  .category-link {
-    color: #212529; /* Цвет текста ссылки (синий) */
-    text-decoration: none; /* Убираем подчеркивание ссылки */
-    transition: color 0.3s ease; /* Плавное изменение цвета текста */
-}
 
-.category-link:hover {
-    color: #212530; /* Цвет текста при наведении (более темный синий) */
-}
-</style>
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCategoryModalLabel">Добавление новой категории</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="addCategoryForm" method="post" action="{% url 'add_category_id' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="categoryName">Название категории:</label>
+            <input type="text" class="form-control" id="categoryName" name="categoryName" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить категорию</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 <header>
   <!-- Fixed navbar -->
@@ -39,9 +57,6 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}">Выход</a>
-          </li>
-          <li class="nav-item">
-            <a href="#about" class="nav-link" data-bs-toggle="modal" data-bs-target="#aboutModal" id="user">Профиль</a>
           </li>
           <li class="nav-item dropdown">
             <a id="category" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -110,36 +125,6 @@
 
 
 
-<!-- Кнопка для открытия модального окна -->
-
-<!-- Модальное окно для добавления категории -->
-<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addCategoryModalLabel">Добавление новой категории</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form id="addCategoryForm" method="post">
-        {% csrf_token %}
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="categoryName">Название категории:</label>
-            <input type="text" class="form-control" id="categoryName" name="categoryName" required>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-          <button type="submit" class="btn btn-primary">Добавить категорию</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-
-
-
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -202,36 +187,13 @@
     </div>
 </div>
 
-<style>
-  .profile-container {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1000; /* обеспечивает, что элемент будет сверху других */
-        }
-        .profile-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            cursor: pointer;
-          }
-        @media screen and (max-width: 768px) {
-        img.ribbon {
-          width: 50%; /* Адаптируем размер изображения для мобильных устройств */
-          height: auto;
-        }
-      }
-      
-</style>
-  
 <!-- Begin page content -->
 <div class="content" style="padding-top: 70px;">
   <div class="container">
     <div class="dropdown">
       <div style="position: relative;">
-      <img src="{% static 'images/profile.png' %}" alt="Profile" class="profile-icon dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; top: 0; right: 0;">
-    </div>
-
+        <img src="{% static 'images/profile.png' %}" data-bs-toggle="modal" data-bs-target="#aboutModal" alt="Profile" class="profile-icon dropdown-toggle" id="user" style="position: absolute; top: 0; right: 0; cursor: pointer;">
+      </div>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
             <a class="dropdown-item" href="#">Profile</a>
         </div>

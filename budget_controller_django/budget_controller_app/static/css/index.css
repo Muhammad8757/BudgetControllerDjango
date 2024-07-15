@@ -21,3 +21,33 @@
 .category-link:hover {
     color: #0056b3; /* Цвет текста при наведении (более темный синий) */
 }
+
+
+.category-link {
+  color: #212529; /* Цвет текста ссылки (синий) */
+  text-decoration: none; /* Убираем подчеркивание ссылки */
+  transition: color 0.3s ease; /* Плавное изменение цвета текста */
+}
+
+.category-link:hover {
+  color: #212530; /* Цвет текста при наведении (более темный синий) */
+}
+
+.profile-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000; /* обеспечивает, что элемент будет сверху других */
+}
+.profile-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+@media screen and (max-width: 768px) {
+img.ribbon {
+width: 50%; /* Адаптируем размер изображения для мобильных устройств */
+height: auto;
+}
+}
