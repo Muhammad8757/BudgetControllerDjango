@@ -336,17 +336,77 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-$('.toast').toast();
+    $('.toast').toast();
 
     // Обработчик клика на кнопку для зеленого toast
-    $('#refreshHistoryBtn').click(function() {
-      // Показать зеленый toast
-      $('#greenToast').toast('show');
+    $('#saveTransactionBtn').click(function() {
+        // Закрываем модальное окно (если необходимо)
+        $('#myModal').modal('hide');
+
+        // Сохраняем состояние тоста в localStorage
+        localStorage.setItem('showGreenToast', 'true');
+        $('#greenToast').toast('show');
     });
 
-    // Обработчик клика на кнопку для красного toast
-    $('#refreshHistoryBtn').click(function() {
-      // Показать красный toast
-      $('#redToast').toast('show');
+    $('#editTransactionSaveBtn').click(function(event) {
+ // Предотвращаем стандартное действие кнопки (отправку формы)
+    
+        // Закрываем модальное окно
+        $('#myModal').modal('hide');
+        localStorage.setItem('showGreenToast', 'true');
+        // Показываем зеленый тост
+        $('#greenToast').toast('show');
+        
     });
+
+    $('#addCategoryModalId').click(function(event) {
+ // Предотвращаем стандартное действие кнопки (отправку формы)
+    
+        // Закрываем модальное окно
+        $('#myModal').modal('hide');
+        localStorage.setItem('showGreenToast', 'true');
+        // Показываем зеленый тост
+        $('#greenToast').toast('show');
+        
+    });
+
+    $('#deleteCategoryModalId').click(function(event) {
+ // Предотвращаем стандартное действие кнопки (отправку формы)
+    
+        // Закрываем модальное окно
+        $('#myModal').modal('hide');
+        localStorage.setItem('showGreenToast', 'true');
+        // Показываем зеленый тост0
+        $('#greenToast').toast('show');
+        
+    });
+
+    $(document).ready(function() {
+        $('#delete_transactionId').click(function(event) {
+            // Предотвращаем стандартное действие кнопки (если это форма)
+            event.preventDefault();
+    
+            // Закрываем модальное окно
+            $('#myModal').modal('hide');
+            
+            // Устанавливаем значение в localStorage
+            localStorage.setItem('showGreenToast', 'true');
+    
+            // Показываем зеленый тост
+            $('#greenToast').toast('show');
+        });
+    });
+    
+
+
+
+
+    if (localStorage.getItem('showGreenToast') === 'true') {
+        $('#greenToast').toast('show');
+        localStorage.removeItem('showGreenToast'); // Очищаем после показа
+    }
+    if (localStorage.getItem('showRedToast') === 'true') {
+        $('#redToast').toast('show');
+        localStorage.removeItem('showRedToast'); // Очищаем после показа
+    }
 });

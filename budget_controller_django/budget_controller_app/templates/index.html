@@ -36,7 +36,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-          <button type="submit" class="btn btn-primary">Добавить категорию</button>
+          <button type="submit" class="btn btn-primary" id="addCategoryModalId">Добавить категорию</button>
         </div>
       </form>
     </div>
@@ -112,12 +112,12 @@
   <div id="greenToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1500">
     <div class="toast-header bg-success text-white">
       <strong class="mr-auto">Успешно</strong>
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <div class="toast-body">
-      Зеленое уведомление! Операция выполнена успешно.
+      Операция выполнена успешно!
     </div>
   </div>
 
@@ -125,24 +125,15 @@
   <div id="redToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1500">
     <div class="toast-header bg-danger text-white">
       <strong class="mr-auto">Ошибка</strong>
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <div class="toast-body">
-      Красное уведомление! Произошла ошибка в процессе.
+      Произошла ошибка в процессе!
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
 
 
 
@@ -170,7 +161,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-          <button type="submit" class="btn btn-primary">Удалить категорию</button>
+          <button type="submit" class="btn btn-primary" id="deleteCategoryModalId">Удалить категорию</button>
         </div>
       </form>
     </div>
@@ -324,7 +315,7 @@
                 onclick="loadTransactionData('{{ transaction.id }}', '{{ transaction.amount }}', '{{ transaction.type }}', '{{ transaction.category.id }}', '{{ transaction.description }}')">
                 Изменить
               </button>
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ transaction.id }}">
+              <button  type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ transaction.id }}">
                 Удалить
               </button>
             </td>
@@ -342,7 +333,7 @@
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                  <a href="{% url 'delete_transaction' %}?id={{ transaction.id }}" class="btn btn-danger">Удалить</a>
+                  <a id="delete_transactionId" href="{% url 'delete_transaction' %}?id={{ transaction.id }}"  class="btn btn-danger">Удалить</a>
                 </div>
               </div>
             </div>
@@ -370,7 +361,7 @@
           <div class="modal-body">
               <form id="editTransactionForm" action="{% url 'edit_transaction' %}" method="post">
                   {% csrf_token %}
-                  <input type="hidden" id="editTransactionId" name="id" value="{{ transaction.id }}">
+                  <input type="hidden" id="editTransactionId" name="id">
                   <div class="form-group">
                       <label for="editTransactionType">Тип</label>
                       <select class="form-control" id="editTransactionType" name="type" required>
@@ -381,7 +372,7 @@
                   </div>
                   <div class="form-group">
                       <label for="editTransactionAmount">Сумма</label>
-                      <input type="text" class="form-control" id="editTransactionAmount" name="amount" value="{{ transaction.amount }}" required>
+                      <input type="text" class="form-control" id="editTransactionAmount" name="amount" required>
                   </div>
                   <div class="form-group">
                       <label for="editTransactionCategory">Категория</label>
@@ -394,7 +385,7 @@
                       <label for="editTransactionDescription">Описание</label>
                       <textarea class="form-control" id="editTransactionDescription" name="description" rows="3">{{ transaction.description }}</textarea>
                   </div>
-                  <button type="submit" class="btn btn-primary">Сохранить</button>
+                  <button id="editTransactionSaveBtn" type="submit" class="btn btn-primary">Сохранить</button>
               </form>
           </div>
       </div>
