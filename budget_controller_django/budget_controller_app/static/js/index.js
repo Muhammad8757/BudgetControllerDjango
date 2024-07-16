@@ -3,15 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 $(document).ready(function() {
-    // Обработчик кнопки удаления транзакции
-    $('.delete-btn').on('click', function(event) {
-        event.preventDefault();
-        var transactionId = $(this).data('id');
-        var deleteUrl = $('#confirmDeleteLink').attr('href') + '?id=' + transactionId;
-        $('#confirmDeleteLink').attr('href', deleteUrl);
-        $('#confirmDeleteModal').modal('show');
-    });
-
     // Обновление истории транзакций по клику на кнопку "Обновить"
     function loadHistoryindex() {
         if (
@@ -50,7 +41,8 @@ $(document).ready(function() {
         ];
     
         const isValid = validUrls.includes(url) ||
-            url.startsWith('http://127.0.0.1:8000/delete_transaction?id=') ||
+            url.startsWith('http://127.0.0.1:8000/delete_transaction?id=2') ||
+            url.startsWith('http://127.0.0.1:8000/search_description?q=bn') ||
             url.startsWith('http://127.0.0.1:8000/filter_by_category?id=');
     
         console.log("Is valid URL:", isValid);
@@ -313,10 +305,6 @@ $(document).on("click", ".editTransactionModal", function () {
 
 
 
-
-
-
-
 document.addEventListener('DOMContentLoaded', function() {
     // Сброс формы при закрытии модального окна добавления транзакции
     $('#addTransactionModal').on('hidden.bs.modal', function () {
@@ -334,79 +322,246 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    $('.toast').toast();
-
-    // Обработчик клика на кнопку для зеленого toast
+    // Обработчик клика на кнопку для зеленого toast при сохранении транзакции
     $('#saveTransactionBtn').click(function() {
         // Закрываем модальное окно (если необходимо)
         $('#myModal').modal('hide');
 
         // Сохраняем состояние тоста в localStorage
-        localStorage.setItem('showGreenToast', 'true');
-        $('#greenToast').toast('show');
+        localStorage.setItem('toastMessage', JSON.stringify({message: 'Категория успешно добавлена!', type: 'success'}));
     });
 
     $('#editTransactionSaveBtn').click(function(event) {
- // Предотвращаем стандартное действие кнопки (отправку формы)
-    
+        // Предотвращаем стандартное действие кнопки (отправку формы)
+
         // Закрываем модальное окно
         $('#myModal').modal('hide');
-        localStorage.setItem('showGreenToast', 'true');
-        // Показываем зеленый тост
-        $('#greenToast').toast('show');
-        
+
+        // Сохраняем состояние тоста в localStorage
+        localStorage.setItem('toastMessage', JSON.stringify({message: 'Транзакция успешно отредактирована!', type: 'success'}));
+    });
+
+    $('#delete_transactionId').click(function(event) {
+        // Предотвращаем стандартное действие кнопки (если это форма)
+
+        // Закрываем модальное окно
+        $('#myModal').modal('hide');
+
+        // Сохраняем состояние тоста в localStorage
+        localStorage.setItem('toastMessage', JSON.stringify({message: 'Транзакция успешно удалена!', type: 'success'}));
     });
 
     $('#addCategoryModalId').click(function(event) {
- // Предотвращаем стандартное действие кнопки (отправку формы)
-    
+        // Предотвращаем стандартное действие кнопки (если это форма)
+
         // Закрываем модальное окно
         $('#myModal').modal('hide');
-        localStorage.setItem('showGreenToast', 'true');
-        // Показываем зеленый тост
-        $('#greenToast').toast('show');
-        
+
+        // Сохраняем состояние тоста в localStorage
+        localStorage.setItem('toastMessage', JSON.stringify({message: 'Категория успешно удалена!', type: 'success'}));
     });
 
-    $('#deleteCategoryModalId').click(function(event) {
- // Предотвращаем стандартное действие кнопки (отправку формы)
-    
-        // Закрываем модальное окно
-        $('#myModal').modal('hide');
-        localStorage.setItem('showGreenToast', 'true');
-        // Показываем зеленый тост0
-        $('#greenToast').toast('show');
-        
-    });
+
+
 
     $(document).ready(function() {
-        $('#delete_transactionId').click(function(event) {
-            // Предотвращаем стандартное действие кнопки (если это форма)
-            event.preventDefault();
-    
-            // Закрываем модальное окно
-            $('#myModal').modal('hide');
-            
-            // Устанавливаем значение в localStorage
-            localStorage.setItem('showGreenToast', 'true');
-    
-            // Показываем зеленый тост
-            $('#greenToast').toast('show');
+        const toastMessage = localStorage.getItem('toastMessage');
+        if (toastMessage) {
+            const {message, type} = JSON.parse(toastMessage);
+            createToast(message, type);
+            localStorage.removeItem('toastMessage'); // Очищаем после показа
+        }
+    });
+});
+
+
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+function deleteTransaction(transactionId) {
+
+    if (transactionId) {
+        const url = delete_transaction + transactionId;
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log(url)
+                // Обновите страницу или выполните другие действия
+                $('#myModal').modal('hide'); // Скрыть модальное окно
+              localStorage.setItem('toastMessage', JSON.stringify({message: 'Транзакция успешно удалена!', type: 'success'}));
+              location.reload(); 
+            } else {
+                alert("Не удалось удалить транзакцию");
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert("Произошла ошибка при удалении транзакции");
+        });
+    } else {
+        console.error('Transaction ID is null or undefined');
+        alert("Неверный ID транзакции");
+    }
+}
+
+
+function createToast(message, type) {
+    const toastContainer = document.getElementById('toastContainer');
+
+    const toastId = 'toast' + Date.now(); // Уникальный ID для каждого тоста
+    const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+    const title = type === 'success' ? 'Успешно' : 'Ошибка';
+
+    const toastHTML = `
+        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1500">
+            <div class="toast-header ${bgClass} text-white">
+                <strong class="mr-auto">${title}</strong>
+                <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+
+    toastElement.addEventListener('hidden.bs.toast', function () {
+        toastElement.remove(); // Удаляем тост из DOM после того, как он исчез
+    });
+}
+
+
+
+
+document.getElementById('addTransactionForm').addEventListener('submit', function(event) {
+    let isValid = true;
+    const amount = document.getElementById('transactionAmount').value;
+
+    // Проверка, что сумма является числом
+    if (isNaN(amount) || amount <= 0) {
+        isValid = false;
+        alert('Пожалуйста, введите правильную сумму.');
+    }
+
+    if (!isValid) {
+        event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
+    }
+  });
+
+
+
+
+  document.getElementById('editTransactionForm').addEventListener('submit', function(event) {
+    let isValid = true;
+    const amount = document.getElementById('editTransactionAmount').value;
+  
+    // Проверка, что сумма является числом
+    if (isNaN(amount) || amount <= 0) {
+        isValid = false;
+        alert('Пожалуйста, введите правильную сумму.');
+    }
+  
+    if (!isValid) {
+        event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
+    }
+  });
+
+
+
+  function handleDeleteCategory(event) {
+    event.preventDefault();
+    const form = document.getElementById('deleteCategoryForm');
+    const formData = new FormData(form);
+    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch(delete_category_id, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': csrfToken
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        createToast('Категория успешно удалена!', 'success');
+      } else {
+        createToast(data.message || 'Произошла ошибка!', 'error');
+      }
+      $('#deleteCategoryModal').modal('hide');
+      setTimeout(() => location.reload(), 1000); 
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      createToast('Произошла ошибка!', 'error');
+      $('#deleteCategoryModal').modal('hide');
+    });
+}
+
+
+  function showToast(toastId) {
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+  }
+
+
+
+
+
+
+
+
+// JavaScript (jQuery)
+$(document).ready(function() {
+    // Обработчик клика на кнопку "Удалить" в модальном окне
+    $('[id^=delete_transactionModalId-]').click(function() {
+        var transactionId = $(this).data('id');  // Получаем идентификатор транзакции
+        
+        // AJAX-запрос на удаление транзакции
+        $.ajax({
+            url: '/delete_transaction/' + transactionId,  // URL для удаления транзакции
+            type: 'DELETE',  // Метод запроса
+            success: function(response) {
+                // Действия после успешного удаления (например, закрытие модального окна)
+                $('#confirmDeleteModal-' + transactionId).modal('hide');  // Закрываем модальное окно
+
+                // Возможно, добавление уведомления или обновление списка транзакций
+            },
+            error: function(xhr, status, error) {
+                // Обработка ошибки удаления, если нужно
+                console.error('Ошибка при удалении транзакции:', error);
+            }
         });
     });
-    
-
-
-
-
-    if (localStorage.getItem('showGreenToast') === 'true') {
-        $('#greenToast').toast('show');
-        localStorage.removeItem('showGreenToast'); // Очищаем после показа
-    }
-    if (localStorage.getItem('showRedToast') === 'true') {
-        $('#redToast').toast('show');
-        localStorage.removeItem('showRedToast'); // Очищаем после показа
-    }
 });
+

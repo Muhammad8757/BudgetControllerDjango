@@ -4,14 +4,39 @@
 
     <link rel="stylesheet" href="{% static 'css/login_style.css' %}" rel="stylesheet">
     <h2>Login</h2>
-    <form method="post" action="">
+    <form id="loginForm" method="post" action="">
         {% csrf_token %}
-        <p>Phone Number: <br><input type="text" name="phone_number"></p>
-        <p>Password: <br><input type="password" name="password"></p>
+        <p>Phone Number: <br><input type="text" id="phone_number" name="phone_number"></p>
+        <p>Password: <br><input type="password" id="password" name="password"></p>
         <div class="form-actions">
             <input type="submit" value="Send">
             <p>Don't have an account? <a href="{% url 'sign_up' %}" class="signup-link">Sign up here</a></p>
         </div>
     </form>
     
+
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            let isValid = true;
+            const phoneNumber = document.getElementById('phone_number').value;
+            const password = document.getElementById('password').value;
+        
+            // Проверка номера телефона (должен быть числом и содержать не менее 10 цифр)
+            if (isNaN(phoneNumber) || phoneNumber.length < 10) {
+                isValid = false;
+                alert('Пожалуйста, введите действительный номер телефона, содержащий не менее 10 цифр..');
+            }
+        
+            // Проверка пароля (например, минимальная длина 6 символов)
+            if (password.length < 6) {
+                isValid = false;
+                alert('Пароль должен содержать не менее 6 знаков.');
+            }
+        
+            if (!isValid) {
+                event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
+            }
+        });
+        </script>
 {% include 'footer.html' %}

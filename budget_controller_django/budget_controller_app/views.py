@@ -1,11 +1,13 @@
 from datetime import datetime
 import hashlib
-from pyexpat.errors import messages 
+import json
+from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.db.models import Q
+from django.views.decorators.http import require_http_methods
 
 def hasher(password) -> hash: #хэширует пароль
     if isinstance(password, int):
@@ -74,14 +76,10 @@ def add_transaction(request):
                 try:
                     user = User.objects.get(phone_number=phone_number_session, password=password_session)
                 except User.DoesNotExist:
-                    return HttpResponse("User not authenticated.")
+                    messages.error(request, "Пользователь не авторизован.")
+                    return redirect('index')
 
                 category = None
-
-                """
-                Чтобы избежать этой ошибки, нужно либо инициализировать category заранее, либо убедиться, 
-                что она всегда будет иметь значение до того, как будет использоваться в коде.
-                """
                 if category_id:  # Проверяем, что category_id не пустой
                     category = get_object_or_404(Category, pk=category_id)
 
@@ -93,14 +91,19 @@ def add_transaction(request):
                     category=category,
                     user=user
                 )
-                
-                return redirect('index')
-            else:
-                return HttpResponse("User not authenticated.")
-        except:
-            return redirect('error_404')
-    return render(request, "index.html")
 
+                # Show success toast
+                messages.success(request, "Транзакция успешно добавлена.")
+                return redirect('index')
+            
+            else:
+                messages.error(request, "Пользователь не авторизован.")
+        
+        except Exception as e:
+            messages.error(request, f"Произошла ошибка: {e}")
+    
+    # If request method is not POST or if any exception occurred, render the index page or appropriate view
+    return redirect('index')
 def filter_by_category(request):
     try:
         choosen_category = request.GET.get("id", None)
@@ -196,34 +199,39 @@ def get_transactions_count(request):
     except:
         return redirect('error_404')
 
+@require_http_methods(["DELETE"])
 def delete_transaction(request):
     try:
-        id_user = request.GET.get('id')
-        phone_number_session = request.session['phone_number']
-        password_session = request.session['password']
-        
-        # Получаем пользователя
-        user = User.objects.get(phone_number=phone_number_session, password=password_session)
-        
-        # Получаем транзакцию пользователя по ID
-        transaction = UserTransaction.objects.get(user=user, id=id_user)
-        
-        # Удаляем транзакцию
-        transaction.delete()
+        # Получаем данные из тела запроса
+        if request.method == 'DELETE':
+            transaction_id = request.GET.get('id')
+            
+            # Получаем пользователя из сессии
+            phone_number_session = request.session.get('phone_number')
+            password_session = request.session.get('password')
+            user = User.objects.get(phone_number=phone_number_session, password=password_session)
+            
+            # Получаем транзакцию пользователя по ID
+            transaction = UserTransaction.objects.get(user=user, id=transaction_id)
+            
+            # Удаляем транзакцию
+            transaction.delete()
 
-        request.session['delete_message'] = 'Транзакция была удалена успешно.'
-        
-        # Возвращаем пользователю страницу index.html
-        return render(request, 'index.html')
+            request.session['delete_message'] = 'Транзакция была удалена успешно.'
+            
+            # Возвращаем успешный ответ
+            return JsonResponse({'message': 'Транзакция успешно удалена!'}, status=200)
+        else:
+            return JsonResponse({'error': 'Method not allowed'}, status=405)
     
-    except User.DoesNotExist:
-        # Обработка случая, когда пользователь не найден
-        return redirect('error')
+    except (User.DoesNotExist, UserTransaction.DoesNotExist) as e:
+        # Обработка случаев, когда пользователь или транзакция не найдены
+        return JsonResponse({'error': str(e)}, status=404)
 
-    except UserTransaction.DoesNotExist:
-        # Обработка случая, когда транзакция пользователя не найдена
-        # Здесь можно перенаправить пользователя на другую страницу или выполнить другие действия
-        return render(request, 'error.html', {'error_message': 'Транзакция не найдена.'})
+    except Exception as e:
+        # Обработка других ошибок
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 
 def clear_delete_message(request):
@@ -233,45 +241,53 @@ def clear_delete_message(request):
 
 def edit_transaction(request):
     if request.method == "POST":
-        transaction_id = request.POST.get('id')
-        amount = float(request.POST.get("amount", 0))
-        type_transaction = int(request.POST.get("type", 0))
-        description = request.POST.get("description", None)
-        category_id = request.POST.get("category", None)
-        # Retrieve user based on session data (example assuming session management)
-        phone_number_session = request.session.get('phone_number')
-        password_session = request.session.get('password')
-        
-        if phone_number_session and password_session:
-            try:
-                user = User.objects.get(phone_number=phone_number_session, password=password_session)
-            except User.DoesNotExist:
-                return redirect('index')
-
-            try:
-                transaction = UserTransaction.objects.get(user=user, id=transaction_id)
-            except UserTransaction.DoesNotExist:
-                return redirect('login')
-
-            # Update transaction details
-            if category_id:
-                category = get_object_or_404(Category, pk=category_id)
-                transaction.category = category
+        try:
+            transaction_id = request.POST.get('id')
+            amount = float(request.POST.get("amount", 0))
+            type_transaction = int(request.POST.get("type", 0))
+            description = request.POST.get("description", None)
+            category_id = request.POST.get("category", None)
             
-            transaction.amount = amount
-            transaction.date = datetime.now().replace(second=0, microsecond=0)
-            transaction.description = description
-            transaction.type = type_transaction
-            transaction.save()
-        
-        else:
-            messages.error(request, "Пользователь не авторизован.")
-        
-        return redirect('index')
+            # Retrieve user based on session data (example assuming session management)
+            phone_number_session = request.session.get('phone_number')
+            password_session = request.session.get('password')
+            
+            if phone_number_session and password_session:
+                try:
+                    user = User.objects.get(phone_number=phone_number_session, password=password_session)
+                except User.DoesNotExist:
+                    messages.error(request, "Пользователь не авторизован.")
+                    return redirect('index')
 
-    # If request method is not POST, render the index page or appropriate view
-    return render(request, "index.html")
+                try:
+                    transaction = UserTransaction.objects.get(user=user, id=transaction_id)
+                except UserTransaction.DoesNotExist:
+                    messages.error(request, "Транзакция не найдена.")
+                    return redirect('index')
 
+                # Update transaction details
+                if category_id:
+                    category = get_object_or_404(Category, pk=category_id)
+                    transaction.category = category
+
+                transaction.amount = amount
+                transaction.date = datetime.now().replace(second=0, microsecond=0)
+                transaction.description = description
+                transaction.type = type_transaction
+                transaction.save()
+
+                # Show success toast
+                messages.success(request, "Транзакция успешно отредактирована.")
+                return redirect('index')
+            
+            else:
+                messages.error(request, "Пользователь не авторизован.")
+        
+        except Exception as e:
+            messages.error(request, f"Произошла ошибка: {e}")
+    
+    # If request method is not POST or if any exception occurred, render the index page or appropriate view
+    return redirect('index')
 
 def sorted_by_amount(request):
     phone_number_session = request.session.get('phone_number')
@@ -420,8 +436,13 @@ def add_category_id(request):
 def delete_category_id(request):
     id = request.POST.get('category')
     category = Category.objects.get(id=id)
+    
+    # Проверка наличия данных, связанных с категорией
+    if UserTransaction.objects.filter(category=category).exists():
+        return JsonResponse({'status': 'error', 'message': 'С этой категорией связаны данные, удаление невозможно!'})
+    
     category.delete()
-    return redirect("index")
+    return JsonResponse({'status': 'success', 'message': 'Категория успешно удалена!'})
 
 
 

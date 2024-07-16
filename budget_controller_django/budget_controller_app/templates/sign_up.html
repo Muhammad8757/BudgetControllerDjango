@@ -3,16 +3,47 @@
 
     <link rel="stylesheet" href="{% static 'css/sign_up_style.css' %}">
     <h2>Sign Up User</h2>
-    <form method="post" action="sign_up">
+    <form id="signUpForm" method="post" action="sign_up">
         {% csrf_token %}
-        <p>Name: <br><input type="text" name="name" /></p>
-        <p>Phone Number: <br><input type="number" name="phone_number"></p>
-        <p>Password: <br><input type="password" name="password"></p>
+        <p>Name: <br><input type="text" id="name" name="name" /></p>
+        <p>Phone Number: <br><input type="number" id="phone_number" name="phone_number"></p>
+        <p>Password: <br><input type="password" id="password" name="password"></p>
         <div class="form-actions">
             <input type="submit" value="Send">
             <p>Already have an account? <a href="{% url 'login' %}" class="login-link">Log in here</a></p>
         </div>
     </form>
+
+    <script>
+        document.getElementById('signUpForm').addEventListener('submit', function(event) {
+            let isValid = true;
+            const name = document.getElementById('name').value;
+            const phoneNumber = document.getElementById('phone_number').value;
+            const password = document.getElementById('password').value;
+
+            // Проверка поля имени
+            if (name.trim() === '') {
+                isValid = false;
+                alert('Please enter your name.');
+            }
+
+            // Проверка номера телефона (должен быть числом и содержать не менее 10 цифр)
+            if (isNaN(phoneNumber) || phoneNumber.length < 10) {
+                isValid = false;
+                alert('Пожалуйста, введите действительный номер телефона, содержащий не менее 10 цифр..');
+            }
+
+            // Проверка пароля (например, минимальная длина 6 символов)
+            if (password.length < 6) {
+                isValid = false;
+                alert('Пароль должен содержать не менее 6 знаков.');
+            }
+
+            if (!isValid) {
+                event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
+            }
+        });
+    </script>
 
 
 {% include 'header.html' %}

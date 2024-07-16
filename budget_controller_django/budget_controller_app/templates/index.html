@@ -5,6 +5,8 @@
 <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
 <link href="{% static 'css/index.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
@@ -14,7 +16,6 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <!-- Подключение Bootstrap JS и зависимостей -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 
 
@@ -106,34 +107,21 @@
 
 
 
-<!-- Контейнер для toasts -->
-<div aria-live="polite" aria-atomic="true" style="position: fixed; top: 20px; right: 20px; z-index: 1;">
-  <!-- Зеленый toast -->
-  <div id="greenToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1500">
-    <div class="toast-header bg-success text-white">
-      <strong class="mr-auto">Успешно</strong>
-      <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="toast-body">
-      Операция выполнена успешно!
-    </div>
-  </div>
 
-  <!-- Красный toast -->
-  <div id="redToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1500">
-    <div class="toast-header bg-danger text-white">
-      <strong class="mr-auto">Ошибка</strong>
-      <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="toast-body">
-      Произошла ошибка в процессе!
-    </div>
-  </div>
+
+<!-- Контейнер для toasts -->
+<div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: fixed; top: 20px; right: 20px; z-index: 1;">
+  <!-- Здесь будут добавляться тосты -->
 </div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -148,7 +136,7 @@
         <h5 class="modal-title" id="deleteCategoryModalLabel">Удаление категории</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form id="addCategoryForm" method="post" action="{% url 'delete_category_id' %}">
+      <form id="deleteCategoryForm" method="post" onsubmit="handleDeleteCategory(event)">
         {% csrf_token %}
         <div class="modal-body">
           <div class="form-group">
@@ -158,6 +146,7 @@
                 <!-- Добавьте другие категории по мере необходимости -->
             </select>
           </div>
+          <div id="deleteCategoryMessage" class="alert" style="display:none;"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -167,6 +156,19 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- Модальное окно подтверждения удаления категории -->
@@ -261,6 +263,14 @@
     </div>
 </div>
 
+
+
+
+
+
+
+
+
 <!-- Begin page content -->
 <div class="content" style="padding-top: 70px;">
   <div class="container">
@@ -286,11 +296,21 @@
         <thead>
           <tr>
             <th scope="col">№</th>
-            <th scope="col"><a href="{% url 'sorted_by_amount' %}">Сумма</a></th>
-            <th scope="col"><a href="{% url 'sorted_by_type' %}">Тип</a></th>
-            <th scope="col"><a href="{% url 'sorted_by_category' %}">Категория</a></th>
-            <th scope="col"><a href="{% url 'sorted_by_date' %}">Дата</a></th>
-            <th scope="col"><a href="{% url 'sorted_by_description' %}">Описание</a></th>
+            <th scope="col">
+              <a href="{% url 'sorted_by_amount' %}">Сумма <i class="bi bi-caret-up-fill"></i><i class="bi bi-caret-down-fill"></i></a></th>
+
+            <th scope="col">
+              <a href="{% url 'sorted_by_type' %}">Тип <i class="bi bi-caret-up-fill"></i><i class="bi bi-caret-down-fill"></i></a></th>
+
+            <th scope="col">
+              <a href="{% url 'sorted_by_category' %}">Категория <i class="bi bi-caret-up-fill"></i><i class="bi bi-caret-down-fill"></i></a></th>
+
+            <th scope="col">
+              <a href="{% url 'sorted_by_date' %}">Дата <i class="bi bi-caret-up-fill"></i><i class="bi bi-caret-down-fill"></i></a></th>
+
+            <th scope="col">
+              <a href="{% url 'sorted_by_description' %}">Описание <i class="bi bi-caret-up-fill"></i><i class="bi bi-caret-down-fill"></i></a></th>
+
             <th scope="col">Действия</th>
           </tr>
         </thead>
@@ -315,29 +335,29 @@
                 onclick="loadTransactionData('{{ transaction.id }}', '{{ transaction.amount }}', '{{ transaction.type }}', '{{ transaction.category.id }}', '{{ transaction.description }}')">
                 Изменить
               </button>
-              <button  type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ transaction.id }}">
-                Удалить
-              </button>
+              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Удалить</button>
             </td>
           </tr>
           <!-- Confirm Delete Modal -->
-          <div class="modal fade" id="confirmDeleteModal-{{ transaction.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ transaction.id }}" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="confirmDeleteModalLabel-{{ transaction.id }}">Подтверждение удаления</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  Вы уверены, что хотите удалить транзакцию?
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                  <a id="delete_transactionId" href="{% url 'delete_transaction' %}?id={{ transaction.id }}"  class="btn btn-danger">Удалить</a>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+          aria-hidden="true">
+       <div class="modal-dialog">
+         <div class="modal-content">
+           <div class="modal-header">
+             <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления транзакции №<span
+                   id="transactionIdDisplay"></span></h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+           </div>
+           <div class="modal-body">
+             Вы уверены, что хотите удалить транзакцию?
+           </div>
+           <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+             <button id="delete_transactionId" type="button" class="btn btn-danger" onclick="deleteTransaction('{{ transaction.id }}')">Удалить</button>
+           </div>
+         </div>
+       </div>
+     </div>
           {% endwith %}
           {% endfor %}
         </tbody>
@@ -345,6 +365,21 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
 
 
 
@@ -395,9 +430,6 @@
 
 
 
-
-
-
 <script>
   var getHistoryUrl = "{% url 'get_history' %}";
   var getBalanceUrl = "{% url 'get_balance' %}";
@@ -405,6 +437,8 @@
   var getCategoryUrl ="{% url 'get_category' %}";
   var getHistoryUrljson ="{% url 'get_categoriesjson' %}";
   var addCategoryid = "{% url 'add_category_id' %}";
+  var delete_category_id = "{% url 'delete_category_id' %}";
+  var delete_transaction = "{% url 'delete_transaction' %}?id=";
 </script>
 
 {% include 'footer.html' %}
