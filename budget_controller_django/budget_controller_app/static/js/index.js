@@ -437,13 +437,12 @@ function createToast(message, type) {
     const toastHTML = `
         <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1500">
             <div class="toast-header ${bgClass} text-white">
-                <strong class="mr-auto">${title}</strong>
+                <div class="toast-body">
+                ${message}
+                </div>
                 <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
-            <div class="toast-body">
-                ${message}
             </div>
         </div>
     `;
