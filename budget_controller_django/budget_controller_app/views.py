@@ -22,21 +22,29 @@ def sign_up(request) -> HttpResponse:
         name = request.POST.get("name", "Undefined")
         phone_number = request.POST.get("phone_number", 1)
         password = request.POST.get("password", "Undefined")
-
         password_hash = hasher(password)
+        user = User.objects.get(phone_number=phone_number, password=password_hash)
 
-        # Создаем нового пользователя
-        User.objects.create(name=name, phone_number=phone_number, password=password_hash)
+        try:
+            # Проверяем наличие пользователя с таким же именем или номером телефона
+            existing_user = User.objects.get(phone_number=user.phone_number)  # Или phone_number=phone_number
+            # Если пользователь существует, показываем сообщение об ошибке и предлагаем вернуться на страницу входа
+            return render(request, "login_error.html", {"error_message": "Пользователь с таким номером уже существует.", "target_path": "login"})
         
-        # Сохраняем данные в сессии
-        request.session['name'] = name
-        request.session['phone_number'] = phone_number
-        request.session['password'] = password_hash
-        
-        # Перенаправляем на страницу index
-        return redirect('index')
+        except User.DoesNotExist:
+            # Создаем нового пользователя, если пользователь не найден
+            User.objects.create(name=name, phone_number=phone_number, password=password_hash)
+            
+            # Сохраняем данные в сессии
+            request.session['name'] = name
+            request.session['phone_number'] = phone_number
+            request.session['password'] = password_hash
+            
+            # Перенаправляем на страницу index
+            return redirect('index')
     
     return render(request, "sign_up.html")
+
 
 def login(request):
     if request.method == "POST":
@@ -49,7 +57,7 @@ def login(request):
             request.session['password'] = password_hash
             return render(request, 'index.html')
         except User.DoesNotExist:
-            return redirect('error_404')
+            return render(request, "login_error.html")
     return render(request, "login.html")
 
 def get_history(request):
@@ -443,10 +451,3 @@ def delete_category_id(request):
     
     category.delete()
     return JsonResponse({'status': 'success', 'message': 'Категория успешно удалена!'})
-
-
-
-def test(request):
-    # Ваш код создания транзакции здесь
-    # Пример успешного создания транзакции
-    return render(request, "push.html")
