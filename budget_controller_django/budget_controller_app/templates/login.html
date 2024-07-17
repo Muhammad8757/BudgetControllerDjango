@@ -1,42 +1,25 @@
 {% load static %}
 {% include 'header.html' %}
 
+<link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    <link rel="stylesheet" href="{% static 'css/login_style.css' %}" rel="stylesheet">
-    <h2>Login</h2>
-    <form id="loginForm" method="post" action="">
-        {% csrf_token %}
-        <p>Phone Number: <br><input type="text" id="phone_number" name="phone_number"></p>
-        <p>Password: <br><input type="password" id="password" name="password"></p>
-        <div class="form-actions">
-            <input type="submit" value="Send">
-            <p>Don't have an account? <a href="{% url 'sign_up' %}" class="signup-link">Sign up here</a></p>
-        </div>
-    </form>
-    
+<h2>Login</h2>
+<form id="loginForm" method="post" action="">
+    {% csrf_token %}
+    <p>Номер телефона: <br><input type="text" id="phone_number" name="phone_number"></p>
+    <p>Пароль: <br><input type="password" id="password" name="password"></p>
+    <div class="form-actions">
+        <input id="SendLoginId" type="submit" value="Send" onclick="saveToastState('Вы успешно вошли в аккаунт!', 'success')">
+        <p>Don't have an account? <a href="{% url 'sign_up' %}" class="signup-link">Sign up here</a></p>
+    </div>
+</form>
 
+<div id="toastContainer"></div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            let isValid = true;
-            const phoneNumber = document.getElementById('phone_number').value;
-            const password = document.getElementById('password').value;
-        
-            // Проверка номера телефона (должен быть числом и содержать не менее 10 цифр)
-            if (isNaN(phoneNumber) || phoneNumber.length < 10) {
-                isValid = false;
-                alert('Пожалуйста, введите действительный номер телефона, содержащий не менее 10 цифр..');
-            }
-        
-            // Проверка пароля (например, минимальная длина 6 символов)
-            if (password.length < 6) {
-                isValid = false;
-                alert('Пароль должен содержать не менее 6 знаков.');
-            }
-        
-            if (!isValid) {
-                event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
-            }
-        });
-        </script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="{% static 'js/login.js' %}"></script>
+
 {% include 'footer.html' %}

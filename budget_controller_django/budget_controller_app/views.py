@@ -23,10 +23,10 @@ def sign_up(request) -> HttpResponse:
         phone_number = request.POST.get("phone_number", 1)
         password = request.POST.get("password", "Undefined")
         password_hash = hasher(password)
-        user = User.objects.get(phone_number=phone_number, password=password_hash)
 
         try:
             # Проверяем наличие пользователя с таким же именем или номером телефона
+            user = User.objects.get(phone_number=phone_number, password=password_hash)
             existing_user = User.objects.get(phone_number=user.phone_number)  # Или phone_number=phone_number
             # Если пользователь существует, показываем сообщение об ошибке и предлагаем вернуться на страницу входа
             return render(request, "login_error.html", {"error_message": "Пользователь с таким номером уже существует.", "target_path": "login"})
@@ -55,8 +55,10 @@ def login(request):
             User.objects.get(phone_number=phone_number, password=password_hash)
             request.session['phone_number'] = phone_number
             request.session['password'] = password_hash
+            messages.success(request, "Вы успешно вошли в аккаунт.")
             return render(request, 'index.html')
         except User.DoesNotExist:
+            messages.error(request, "Неверный номер телефона или пароль. Попробуйте снова.")
             return render(request, "login_error.html")
     return render(request, "login.html")
 

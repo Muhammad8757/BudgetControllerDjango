@@ -1,49 +1,28 @@
 {% load static %}
 {% include 'header.html' %}
 
-    <link rel="stylesheet" href="{% static 'css/sign_up_style.css' %}">
-    <h2>Sign Up User</h2>
-    <form id="signUpForm" method="post" action="sign_up">
-        {% csrf_token %}
-        <p>Name: <br><input type="text" id="name" name="name" /></p>
-        <p>Phone Number: <br><input type="number" id="phone_number" name="phone_number"></p>
-        <p>Password: <br><input type="password" id="password" name="password"></p>
-        <div class="form-actions">
-            <input type="submit" value="Send">
-            <p>Already have an account? <a href="{% url 'login' %}" class="login-link">Log in here</a></p>
-        </div>
-    </form>
+<link rel="stylesheet" href="{% static 'css/sign_up_style.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    <script>
-        document.getElementById('signUpForm').addEventListener('submit', function(event) {
-            let isValid = true;
-            const name = document.getElementById('name').value;
-            const phoneNumber = document.getElementById('phone_number').value;
-            const password = document.getElementById('password').value;
+<h2>Sign Up User</h2>
+<form id="signUpForm" method="post" action="sign_up">
+    {% csrf_token %}
+    <p>Имя: <br><input type="text" id="name" name="name" /></p>
+    <p>Номер телефона: <br><input type="number" id="phone_number" name="phone_number"></p>
+    <p>Пароль: <br><input type="password" id="password" name="password"></p>
+    <div class="form-actions">
+        <input type="submit" value="Send" onclick="saveToastState('Регистрация прошла успешно!', 'success')">
+        <p>Already have an account? <a href="{% url 'sign_up' %}" class="login-link">Log in here</a></p>
+    </div>
+</form>
 
-            // Проверка поля имени
-            if (name.trim() === '') {
-                isValid = false;
-                alert('Please enter your name.');
-            }
+<div id="toastContainer"></div>
 
-            // Проверка номера телефона (должен быть числом и содержать не менее 10 цифр)
-            if (isNaN(phoneNumber) || phoneNumber.length < 10) {
-                isValid = false;
-                alert('Пожалуйста, введите действительный номер телефона, содержащий не менее 10 цифр..');
-            }
-
-            // Проверка пароля (например, минимальная длина 6 символов)
-            if (password.length < 6) {
-                isValid = false;
-                alert('Пароль должен содержать не менее 6 знаков.');
-            }
-
-            if (!isValid) {
-                event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
-            }
-        });
-    </script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="{% static 'js/signup.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
-{% include 'header.html' %}
+
+{% include 'footer.html' %}

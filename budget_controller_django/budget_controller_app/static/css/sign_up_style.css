@@ -66,3 +66,12 @@ input[type="submit"]:hover {
 .login-link:hover {
     background-color: #0056b3;
 }
+
+.toast {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    min-width: 150px; /* Ширина уведомления */
+    margin-bottom: 1rem; /* Отступ между уведомлениями */
+    border-radius: .25rem; /* Закругляем углы */
+  }
