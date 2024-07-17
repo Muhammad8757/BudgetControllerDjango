@@ -1,58 +1,4 @@
-
-function createToast(message, type) {
-    const toastContainer = document.getElementById('toastContainer');
-    if (!toastContainer) {
-        console.error('Toast container not found');
-        return;
-    }
-
-    const toastId = 'toast' + Date.now();
-    const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
-    const title = type === 'success' ? 'Успешно' : 'Ошибка';
-
-    const toastHTML = `
-        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
-            <div class="toast-header ${bgClass} text-white">
-                <strong class="mr-auto">${title}</strong>
-                <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="toast-body">
-                ${message}
-            </div>
-        </div>
-    `;
-
-    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
-    toast.show();
-
-    toastElement.addEventListener('hidden.bs.toast', function () {
-        toastElement.remove();
-    });
-}
-
-function saveToastState(message, type) {
-    localStorage.setItem('toastMessage', JSON.stringify({ message: message, type: type }));
-}
-
-function showSavedToast() {
-    const savedToast = localStorage.getItem('toastMessage');
-    if (savedToast) {
-        const { message, type } = JSON.parse(savedToast);
-        createToast(message, type);
-        localStorage.removeItem('toastMessage');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    showSavedToast();
-});
-
-document.getElementById('signUpForm').addEventListener('submit', function(event) {
+document.getElementById('signUpForm').addEventListener('submit', async function(event) {
     let isValid = true;
     const name = document.getElementById('name').value;
     const phoneNumber = document.getElementById('phone_number').value;
@@ -70,10 +16,23 @@ document.getElementById('signUpForm').addEventListener('submit', function(event)
 
     if (password.length < 6) {
         isValid = false;
-        alert('Пароль должен содержать не менее 6 знаков.');
+        alert('Пароль должен содержать не менее 6 символов.');
     }
 
     if (!isValid) {
         event.preventDefault();
+        return; // Досрочный выход из функции при невалидных данных
+    }
+
+    try {
+        // Ваш код для отправки данных формы на сервер
+        // Предполагаем, что регистрация прошла успешно
+        createToast('Регистрация прошла успешно', 'success');
+        saveToastState('Регистрация прошла успешно', 'success');
+    } catch (error) {
+        // Обработка ошибок при регистрации
+        console.error('Ошибка регистрации:', error);
+        createToast('Ошибка регистрации', 'error');
+        saveToastState('Ошибка регистрации', 'error');
     }
 });
