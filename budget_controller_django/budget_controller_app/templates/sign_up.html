@@ -1,28 +1,46 @@
+{% extends 'base.html' %}
 {% load static %}
-{% include 'header.html' %}
 
+{% block title %}Регистрация{% endblock %}
+
+{% block additional_styles %}
 <link rel="stylesheet" href="{% static 'css/sign_up_style.css' %}">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+{% endblock %}
 
-<h2>Sign Up User</h2>
-<form id="signUpForm" method="post" action="sign_up">
+{% block content %}
+
+<h2>Регистрация</h2>
+<form id="signUpForm" method="post" action="{% url 'sign_up' %}">
     {% csrf_token %}
-    <p>Имя: <br><input type="text" id="name" name="name" /></p>
-    <p>Номер телефона: <br><input type="number" id="phone_number" name="phone_number"></p>
-    <p>Пароль: <br><input type="password" id="password" name="password"></p>
+    
+    <p>Имя: <br>
+        <input type="text" id="name" name="name">
+        <span class="error-message" id="name_error" style="color: red; font-weight: bold; font-size: 14px"></span>
+    </p>
+    
+    <p>Номер телефона: <br>
+        <input type="text" id="phone_number" name="phone_number">
+        <span class="error-message" id="phone_number_error" style="color: red; font-weight: bold; font-size: 14px"></span>
+    </p>
+    
+    <p>Пароль: <br>
+        <input type="password" id="password" name="password">
+        <span class="error-message" id="password_error" style="color: red; font-weight: bold; font-size: 14px"></span>
+    </p>
+    
     <div class="form-actions">
-        <input type="submit" value="Send" onclick="saveToastState('Регистрация прошла успешно!', 'success')">
-        <p>Already have an account? <a href="{% url 'login' %}" class="login-link">Log in here</a></p>
+        <input type="submit" value="Отправить" onclick="saveToastState('Регистрация прошла успешно!', 'success')">
+        <p style="font-size: 18px;">Уже есть аккаунт? <a href="{% url 'login' %}" class="login-link">Войти</a></p>
     </div>
 </form>
 
+
+
+
 <div id="toastContainer"></div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+{% endblock %}
+
+{% block additional_scripts %}
 <script src="{% static 'js/signup.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-
-
-{% include 'footer.html' %}
+{% endblock %}

@@ -1,3 +1,4 @@
+/* Основные стили страницы */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -21,6 +22,17 @@ form {
 
 p {
     margin-bottom: 15px;
+}
+
+a {
+    color: #ffffff;
+    text-decoration: none; /* Убираем подчеркивание по умолчанию */
+    color: inherit; /* Наследуем цвет текста от родительского элемента */
+}
+
+a:hover {
+    color: #ffffff; 
+    text-decoration: underline; /* Добавляем подчеркивание при наведении */
 }
 
 input[type="text"],
@@ -64,7 +76,8 @@ input[type="submit"]:hover {
 }
 
 .signup-link:hover {
-    background-color: #0056b3;
+    color: #ffffff; 
+    text-decoration: underline; /* Добавляем подчеркивание при наведении */
 }
 
 .toast {
@@ -75,3 +88,19 @@ input[type="submit"]:hover {
     margin-bottom: 1rem; /* Отступ между уведомлениями */
     border-radius: .25rem; /* Закругляем углы */
   }
+
+.error-message {
+    color: red; /* Цвет текста сообщений об ошибках */
+    font-size: 14px; /* Размер шрифта для сообщений об ошибках */
+    margin-top: 5px; /* Отступ сверху */
+    display: block; /* Убедитесь, что элемент отображается как блок для корректного позиционирования */
+    font-weight: bold; /* Сделать текст полужирным для лучшей видимости */
+}
+
+.bg-success {
+    background-color: #28a745;
+}
+
+.bg-danger {
+    background-color: #dc3545;
+}

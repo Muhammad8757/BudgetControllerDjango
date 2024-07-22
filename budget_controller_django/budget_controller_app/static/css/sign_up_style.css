@@ -44,9 +44,7 @@ input[type="submit"] {
     cursor: pointer;
 }
 
-input[type="submit"]:hover {
-    background-color: #218838;
-}
+
 
 .form-actions {
     text-align: center;
@@ -63,8 +61,17 @@ input[type="submit"]:hover {
     transition: background-color 0.3s ease;
 }
 
+
+
+
+a {
+    color: #ffffff;
+    text-decoration: none; /* Убираем подчеркивание по умолчанию */
+}
+
 .login-link:hover {
-    background-color: #0056b3;
+    color: #ffffff; 
+    text-decoration: underline; /* Добавляем подчеркивание при наведении */
 }
 
 .toast {

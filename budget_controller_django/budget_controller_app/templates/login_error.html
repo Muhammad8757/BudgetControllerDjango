@@ -1,15 +1,15 @@
+{% extends 'base.html' %}
 {% load static %}
-{% include 'header.html' %}
-<!-- Подключаем Bootstrap CSS -->
+
+{% block additional_styles %}
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <link href="{% static 'css/error.css' %}" rel="stylesheet">
+{% endblock %}
 
-</head>
-<body>
+{% block content %}
     <div class="error-container">
         <h1>Ошибка</h1>
         <p>{{ error_message }}</p>
         <a href="{{ target_path }}" class="btn btn-primary mt-3">На главную</a>
     </div>
-
-{% include 'footer.html' %}
+{% endblock %}

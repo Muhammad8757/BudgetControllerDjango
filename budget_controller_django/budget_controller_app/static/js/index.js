@@ -9,8 +9,9 @@ $(document).ready(function() {
             window.location.href === 'http://127.0.0.1:8000/' 
             || window.location.href === 'http://127.0.0.1:8000/login' 
             || window.location.href.startsWith('http://127.0.0.1:8000/delete_transaction?id=')
+            || window.location.href.startsWith('http://127.0.0.1:8000/edit_category')
             ) {
-            fetch(getHistoryUrl)
+            fetch("get_history")
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();
@@ -41,14 +42,12 @@ $(document).ready(function() {
         ];
     
         const isValid = validUrls.includes(url) ||
-            url.startsWith('http://127.0.0.1:8000/delete_transaction?id=2') ||
-            url.startsWith('http://127.0.0.1:8000/search_description?q=bn') ||
-            url.startsWith('http://127.0.0.1:8000/filter_by_category?id=');
+            url.startsWith('http://127.0.0.1:8000')
     
         console.log("Is valid URL:", isValid);
     
         if (isValid) {
-            fetch(getBalanceUrl)
+            fetch("get_balance")
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();
@@ -67,7 +66,7 @@ $(document).ready(function() {
     get_balance();
 
     function loadHistory() {
-        fetch(getHistoryUrl)
+        fetch("get_history")
             .then(response => response.text())
             .then(html => {
                 const parser = new DOMParser();
@@ -80,7 +79,7 @@ $(document).ready(function() {
 
 
     function loadCategory() {
-        fetch(getCategoryUrl)
+        fetch("get_category")
             .then(response => response.text())
             .then(html => {
                 const parser = new DOMParser();
@@ -98,7 +97,7 @@ $(document).ready(function() {
 
 
     function loadCategory() {
-        fetch(getCategoryUrl)
+        fetch("get_category")
             .then(response => response.text())
             .then(html => {
                 const parser = new DOMParser();
@@ -118,7 +117,7 @@ $(document).ready(function() {
         const formData = new FormData();
         formData.append('category_name', categoryName);
     
-        fetch(add_category_id, {
+        fetch("add_category_id", {
             method: 'POST',
             body: formData
         })
@@ -158,7 +157,7 @@ $(document).ready(function() {
     });
 
     document.getElementById('user').addEventListener('click', function() {
-        fetch(aboutUserUrl)
+        fetch("about_user")
             .then(response => response.text())
             .then(html => {
                 const tempElement = document.createElement('div');
@@ -174,12 +173,30 @@ $(document).ready(function() {
 });
 
 
+
+function handleEditCategory(event) {
+    const categoryNameInput = document.getElementById('editcategoryName');
+    const errorElement = document.getElementById('editCategoryError');
+    
+    // Clear any existing error messages
+    errorElement.style.display = 'none';
+    
+    if (categoryNameInput.value.trim() === '') {
+      event.preventDefault(); // Stop form submission
+      errorElement.style.display = 'block'; // Show error message
+      return false;
+    }
+    
+    return true;
+  }
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const transactionCategorySelect = document.getElementById('deleteTransactionCategory');
 
     // Функция для загрузки категорий из Django
     function deleteTransactionCategory() {
-        fetch(getHistoryUrljson)  // URL для получения категорий
+        fetch("get_categoriesjson")  // URL для получения категорий
             .then(response => response.json())
             .then(data => {
                 // Очистить текущие опции в select
@@ -207,13 +224,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    const transactionCategorySelect = document.getElementById('editTransactionCategory');
+    const transactionCategorySelect = document.getElementById('editCategory');
+    const categoryNameInput = document.getElementById('editcategoryName');
+    const categoryError = document.getElementById('categoryMessage');
+    const editCategoryModal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+    const editCategoryButton = document.getElementById('editCategoryModalId'); // Кнопка редактирования категории
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Получение CSRF токена
 
     // Функция для загрузки категорий из Django
-    function loadCategories() {
-        fetch(getHistoryUrljson)  // URL для получения категорий
+    function editCategory() {
+        fetch("get_categoriesjson")  // URL для получения категорий
             .then(response => response.json())
             .then(data => {
                 // Очистить текущие опции в select
@@ -236,9 +257,102 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Ошибка загрузки категорий:', error));
     }
 
+    // Обработчик изменения выбора категории
+    transactionCategorySelect.addEventListener('change', function() {
+        const selectedOption = transactionCategorySelect.options[transactionCategorySelect.selectedIndex];
+        const selectedId = selectedOption.value;
+        const selectedName = selectedOption.textContent; // Получаем отображаемое имя опции
+
+        console.log("Selected ID:", selectedId);
+        console.log("Selected Name:", selectedName);
+
+        if (selectedId === '') {
+            categoryNameInput.value = '';
+            categoryError.textContent = 'Пожалуйста, выберите категорию.';
+            categoryError.style.display = 'block';
+        } else {
+            categoryNameInput.value = selectedName;
+            categoryError.textContent = '';
+            categoryError.style.display = 'none';
+        }
+    });
+
+    // Закрытие модального окна
+    
+    
+    // Обработчик для кнопки редактирования категории
+    if (editCategoryButton) {
+        editCategoryButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            $('#editCategoryModal').modal('hide');
+            const selectedOption = transactionCategorySelect.options[transactionCategorySelect.selectedIndex];
+            const selectedId = selectedOption.value;
+            const new_name = categoryNameInput.value;
+
+            // Вызов функции с новыми данными
+            handleAndEditCategory(new_name, selectedId);
+        });
+    }
+
+    document.getElementById('editCategoryModal').addEventListener('hidden.bs.modal', function () {
+        categoryError.textContent = '';
+        categoryError.style.display = 'none';
+        categoryNameInput.value = ''; // Очистка поля названия
+        transactionCategorySelect.value = ''; // Сброс выбора категории
+    });
+
     // Вызвать функцию загрузки категорий при загрузке страницы
-    loadCategories();
+    editCategory();
 });
+
+function handleAndEditCategory(new_name, category_id) {
+    console.log("Handling category edit. new_name:", new_name);
+    console.log("Handling category edit. category_id:", category_id);
+    
+    let xhr = new XMLHttpRequest();
+    let url = 'edit_category'; // Используйте корректный URL
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.setRequestHeader('X-CSRFToken', csrftoken); // Убедитесь, что csrftoken доступен
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            console.log("XHR readyState:", xhr.readyState);
+            console.log("XHR status:", xhr.status);
+            console.log("XHR response:", xhr.responseText);
+            
+            try {
+                let response = JSON.parse(xhr.responseText);
+                
+                if (xhr.status === 200 && response.success) {
+                    localStorage.setItem('dataKey', JSON.stringify({ message: "Отправлен" }));
+                    console.log("Данные сохранены в localStorage");
+    
+                    document.getElementById('editCategoryModal').classList.remove('show');
+                    
+                    createToast(response.message, 'success');
+                } else {
+                    console.error(response.error);
+                    showErrorUnderField('editcategoryName', response.error || 'Ошибка при редактировании категории');
+                    createToast(response.message, 'success');
+                }
+            } catch (e) {
+                console.error("Ошибка при парсинге ответа сервера:", e);
+            }
+        }
+    };
+    
+    let data = JSON.stringify({
+        editcategoryName: new_name,
+        category: category_id // Добавляем category_id в данные
+    });
+    console.log("Data to be sent:", data);
+
+    xhr.send(data);
+}
+
+
+
 
 
 
@@ -247,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Функция для загрузки категорий из Django
     function loadCategories() {
-        fetch(getHistoryUrljson)  // URL для получения категорий
+        fetch("get_categoriesjson")  // URL для получения категорий
             .then(response => response.json())
             .then(data => {
                 // Очистить текущие опции в select
@@ -312,9 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Сброс формы при закрытии модального окна редактирования транзакции
-    $('#editTransactionModal').on('hidden.bs.modal', function () {
-        document.getElementById("editTransactionForm").reset();
-    });
+
 
     // Очистка полей формы вручную при открытии модального окна добавления транзакции
     $('#addTransactionModal').on('shown.bs.modal', function () {
@@ -329,6 +441,9 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#myModal').modal('hide');
 
         // Сохраняем состояние тоста в localStorage
+        // Сохраняем состояние тоста в localStorage
+        const localMessage = localStorage.getItem('toastMessage', JSON.stringify({message: 'Транзакция успешно добавлена!', type: 'success'}));
+        
         localStorage.setItem('toastMessage', JSON.stringify({message: 'Транзакция успешно добавлена!', type: 'success'}));
     });
 
@@ -361,6 +476,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // Сохраняем состояние тоста в localStorage
         localStorage.setItem('toastMessage', JSON.stringify({message: 'Категория успешно добавлена!', type: 'success'}));
     });
+
+    // Сброс данных формы после закрытия модального окна
+$('#editCategoryModal').on('hidden.bs.modal', function () {
+    // Сброс формы
+    $(this).find('form')[0].reset();
+
+    // Очистка значений полей ввода и текстовых областей
+    $(this).find('input, textarea').val('');
+
+    // Если есть сообщения об ошибках или уведомления
+    $('#editCategoryError').hide();
+    $('#deleteCategoryMessage').hide();
+});
+
+// Обработка клика по кнопке "Сохранить
+
+    
 
 
 
@@ -404,7 +536,7 @@ function setTransactionId(transactionId) {
 
 document.getElementById('deleteTransactionBtn').addEventListener('click', function() {
   if (deleteTransactionId) {
-    const url = delete_transaction + deleteTransactionId;
+    const url = "delete_transaction?id=" + deleteTransactionId;
     fetch(url, {
       method: 'DELETE',
       headers: {
@@ -418,7 +550,7 @@ document.getElementById('deleteTransactionBtn').addEventListener('click', functi
         localStorage.setItem('toastMessage', JSON.stringify({message: 'Транзакция успешно удалена!', type: 'success'}));
         location.reload(); 
       } else {
-        alert("Не удалось удалить транзакцию");
+        localStorage.setItem('toastMessage', JSON.stringify({message: 'Транзакция успешно удалена!', type: 'success'}));
       }
     })
     .catch(error => {
@@ -464,49 +596,13 @@ function createToast(message, type) {
 
 
 
-
-document.getElementById('addTransactionForm').addEventListener('submit', function(event) {
-    let isValid = true;
-    const amount = document.getElementById('transactionAmount').value;
-
-    // Проверка, что сумма является числом
-    if (isNaN(amount) || amount <= 0) {
-        isValid = false;
-        alert('Пожалуйста, введите правильную сумму.');
-    }
-
-    if (!isValid) {
-        event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
-    }
-  });
-
-
-
-
-  document.getElementById('editTransactionForm').addEventListener('submit', function(event) {
-    let isValid = true;
-    const amount = document.getElementById('editTransactionAmount').value;
-  
-    // Проверка, что сумма является числом
-    if (isNaN(amount) || amount <= 0) {
-        isValid = false;
-        alert('Пожалуйста, введите правильную сумму.');
-    }
-  
-    if (!isValid) {
-        event.preventDefault(); // Предотвращает отправку формы, если данные невалидные
-    }
-  });
-
-
-
   function handleDeleteCategory(event) {
     event.preventDefault();
     const form = document.getElementById('deleteCategoryForm');
     const formData = new FormData(form);
     const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch(delete_category_id, {
+    fetch("delete_category_id", {
       method: 'POST',
       body: formData,
       headers: {
@@ -538,33 +634,231 @@ document.getElementById('addTransactionForm').addEventListener('submit', functio
   }
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Получаем все элементы с ID, начинающимся с "delete_transactionModalId-"
+    var deleteButtons = document.querySelectorAll('[id^=delete_transactionModalId-]');
 
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var transactionId = button.getAttribute('data-id');  // Получаем идентификатор транзакции
+            
+            // Создаем и настраиваем XMLHttpRequest
+            var xhr = new XMLHttpRequest();
+            var url = 'delete_transaction' + transactionId;  // URL для удаления транзакции
+            xhr.open('DELETE', url, true);
 
+            // Обработчик успешного ответа сервера
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Действия после успешного удаления (например, закрытие модального окна)
+                    var confirmDeleteModal = document.getElementById('confirmDeleteModal-' + transactionId);
+                    if (confirmDeleteModal) {
+                        // Закрываем модальное окно (если используете Bootstrap, замените метод на `modal('hide')`)
+                        $('#confirmDeleteModal').modal('hide');
+                    }
 
+                    // Возможно, добавление уведомления или обновление списка транзакций
+                } else {
+                    // Обработка ошибки удаления, если нужно
+                    console.error('Ошибка при удалении транзакции:', xhr.statusText);
+                }
+            };
 
+            // Обработчик ошибки запроса
+            xhr.onerror = function() {
+                console.error('Ошибка при удалении транзакции:', xhr.statusText);
+            };
 
-
-// JavaScript (jQuery)
-$(document).ready(function() {
-    // Обработчик клика на кнопку "Удалить" в модальном окне
-    $('[id^=delete_transactionModalId-]').click(function() {
-        var transactionId = $(this).data('id');  // Получаем идентификатор транзакции
-        
-        // AJAX-запрос на удаление транзакции
-        $.ajax({
-            url: '/delete_transaction/' + transactionId,  // URL для удаления транзакции
-            type: 'DELETE',  // Метод запроса
-            success: function(response) {
-                // Действия после успешного удаления (например, закрытие модального окна)
-                $('#confirmDeleteModal-' + transactionId).modal('hide');  // Закрываем модальное окно
-
-                // Возможно, добавление уведомления или обновление списка транзакций
-            },
-            error: function(xhr, status, error) {
-                // Обработка ошибки удаления, если нужно
-                console.error('Ошибка при удалении транзакции:', error);
-            }
+            // Отправляем запрос
+            xhr.send();
         });
     });
 });
 
+
+
+
+
+function create_transaction(amount, type, categoryId, description) {
+    // Создаем и настраиваем XMLHttpRequest
+    let xhr = new XMLHttpRequest();
+    let url = "add_transaction";
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.setRequestHeader('X-CSRFToken', csrftoken); 
+
+    // Обработчик ответа сервера
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            let response = JSON.parse(xhr.responseText);
+            if (xhr.status === 200) {
+                // Обработка успешного ответа сервера
+                console.log(response.message);
+                $('#addTransactionModal').modal('hide');
+                createToast(response.message, 'success');
+                window.location.href = '/';
+            } else {
+                // Обработка ошибки
+                console.error(response.error);
+                 // или другой способ отображения сообщения
+                showErrorUnderField('transactionAmount', 'Введите сумму');
+            }
+        }
+    };
+
+    // Данные для отправки
+    let data = JSON.stringify({
+        amount: amount,
+        type: type,
+        categoryId: categoryId,
+        description: description
+    });
+
+    // Отправляем запрос
+    xhr.send(data);
+}
+
+
+
+
+// Добавляем обработчик событий для кнопки с id saveTransactionBtn
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('saveTransactionBtn').addEventListener('click', function(event) {
+        event.preventDefault();  
+        // Получаем значения из формы
+        var amount = document.getElementById('transactionAmount').value;
+        var type = document.getElementById('transactionType').value;
+        var categoryId = document.getElementById('transactionCategory').value;
+        var description = document.getElementById('transactionDescription').value;
+
+        // Очищаем старые ошибки перед новой проверкой
+        clearModalErrors();
+
+        // Проверяем, что все поля заполнены корректно
+        let isValid = true;
+
+        if (!type) {
+            showErrorUnderField('transactionType', 'Выберите тип транзакции');
+            isValid = false;
+        }
+
+        if (!amount.match(/^\d+(\.\d{1,2})?$/)) {
+            showErrorUnderField('transactionAmount', 'Введите корректную сумму');
+            isValid = false;
+        }
+
+        // Если все проверки прошли успешно, вызываем функцию create_transaction
+        if (isValid) {
+            create_transaction(amount, type, categoryId, description);
+        }
+
+        $('#addTransactionModal').on('hide.bs.modal', function (e) {
+            clearModalErrors();  // Очищаем ошибки при закрытии модального окна
+        });
+    });
+});
+
+
+function logoutUser() {
+    $.ajax({
+        url: 'logout',  // Убедитесь, что этот URL соответствует URL в вашем Django проекте
+        type: 'POST',
+        data: {
+            csrfmiddlewaretoken: csrftoken  // Вставьте этот токен в шаблон Django
+        },
+        success: function(response) {
+            createToast(response.message, "success")
+            window.location.href = "login";  // Перенаправляем пользователя на главную страницу после выхода
+        },
+        error: function(response) {
+            createToast(response.responseJSON.error, "error")
+        }
+    });
+}
+
+// Функция для показа сообщений об ошибках под полями формы
+// Функция для показа и обновления сообщений об ошибках под полем
+function showErrorUnderField(fieldId, errorMessage) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.createElement('div');
+    errorElement.classList.add('text-danger', 'mt-1');
+    errorElement.innerText = errorMessage;
+
+    // Проверяем, есть ли уже сообщение об ошибке под полем
+    const existingError = field.nextElementSibling;
+    if (existingError && existingError.classList.contains('text-danger')) {
+        existingError.innerText = errorMessage;
+    } else {
+        field.parentNode.insertBefore(errorElement, field.nextSibling);
+    }
+}
+
+// Функция для очистки всех сообщений об ошибках
+function clearModalErrors() {
+    const errorElements = document.querySelectorAll('.text-danger');
+    errorElements.forEach(element => element.remove());
+}
+
+// Функция для проверки и отправки формы
+function handleFormSubmission(formId, fieldValidations) {
+    // Функция для показа и обновления сообщений об ошибках под полем
+    function showErrorUnderField(fieldId, errorMessage) {
+        const field = document.getElementById(fieldId);
+        const errorElement = document.createElement('div');
+        errorElement.classList.add('text-danger', 'mt-1');
+        errorElement.innerText = errorMessage;
+
+        // Проверяем, есть ли уже сообщение об ошибке под полем
+        const existingError = field.nextElementSibling;
+        if (existingError && existingError.classList.contains('text-danger')) {
+            existingError.innerText = errorMessage;
+        } else {
+            field.parentNode.insertBefore(errorElement, field.nextSibling);
+        }
+    }
+
+    // Функция для очистки всех сообщений об ошибках
+    function clearModalErrors() {
+        const errorElements = document.querySelectorAll('.text-danger');
+        errorElements.forEach(element => element.remove());
+    }
+
+    // Обработчик отправки формы
+    document.getElementById(formId).addEventListener('submit', function(event) {
+        clearModalErrors(); // Очищаем все предыдущие сообщения об ошибках
+
+        let isValid = true;
+
+        // Выполняем проверки для каждого поля
+        fieldValidations.forEach(({ fieldId, validationFn, errorMessage }) => {
+            const field = document.getElementById(fieldId);
+            if (!validationFn(field.value)) {
+                showErrorUnderField(fieldId, errorMessage);
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault(); // Останавливаем отправку формы, если есть ошибки
+        }
+    });
+}
+
+
+
+// Функция для получения CSRF-токена из cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Проверить, совпадает ли строка cookie с ожидаемым значением
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

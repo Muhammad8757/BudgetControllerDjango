@@ -1,4 +1,3 @@
-
 function createToast(message, type) {
     const toastContainer = document.getElementById('toastContainer');
     if (!toastContainer) {
@@ -11,15 +10,14 @@ function createToast(message, type) {
     const title = type === 'success' ? 'Успешно' : 'Ошибка';
 
     const toastHTML = `
-        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1500">
             <div class="toast-header ${bgClass} text-white">
-                <strong class="mr-auto">${title}</strong>
+                <div class="toast-body">
+                ${message}
+                </div>
                 <button type="button" class="ml-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
-            <div class="toast-body">
-                ${message}
             </div>
         </div>
     `;
@@ -35,20 +33,56 @@ function createToast(message, type) {
     });
 }
 
-function saveToastState(message, type) {
-    localStorage.setItem('toastMessage', JSON.stringify({ message: message, type: type }));
-}
-
-function showSavedToast() {
-    const savedToast = localStorage.getItem('toastMessage');
-    if (savedToast) {
-        const { message, type } = JSON.parse(savedToast);
-        createToast(message, type);
-        localStorage.removeItem('toastMessage');
+function showToastFromUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const toastType = urlParams.get('toast');
+    console.log("Toast type from URL:", toastType); // Отладка
+    if (toastType === 'unauthorized') {
+        createToast('Вы не зарегистрированы. Пожалуйста, войдите в систему.', 'danger');
+    }
+    else if (toastType === 'wrong_pass') {
+        createToast('Неправильный пароль или телефонный номер.', 'danger');
     }
 }
 
-// Показываем сохраненный тост при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
-    showSavedToast();
+    console.log("Loading toasts...");
+    showToastFromUrlParams();
+
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', function(event) {
+        const phoneNumberInput = document.getElementById('phone_number');
+        const phoneNumberError = document.getElementById('phone_number_error');
+        let isValid = true;
+
+        // Очистка предыдущих ошибок
+        phoneNumberError.textContent = '';
+
+        // Проверка на правильность введенных данных
+        if (!phoneNumberInput.value.match(/^\d+$/)) {
+            phoneNumberError.textContent = 'Введите только цифры для номера телефона';
+            isValid = false;
+        }
+
+        // Другие проверки для поля пароля, если нужно
+        const passwordInput = document.getElementById('password');
+        const passwordError = document.getElementById('password_error');
+
+        if (passwordInput.value.trim() === '') {
+            // Пример проверки для пароля (если нужно)
+            // Создание элемента для отображения ошибки, если его нет
+            if (!passwordError) {
+                const errorSpan = document.createElement('span');
+                errorSpan.id = 'password_error';
+                errorSpan.className = 'error-message';
+                passwordInput.parentElement.appendChild(errorSpan);
+            }
+            document.getElementById('password_error').textContent = 'Пароль не может быть пустым';
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault(); // Останавливаем отправку формы, если есть ошибки
+        }
+    });
 });

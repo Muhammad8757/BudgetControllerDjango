@@ -1,5 +1,7 @@
+from django.shortcuts import redirect
 from django.urls import path, re_path
 from budget_controller_app import views
+
 
 
 urlpatterns = [
@@ -26,4 +28,6 @@ urlpatterns = [
     path('get_categoriesjson', views.get_categoriesjson, name='get_categoriesjson'),
     path('add_category_id', views.add_category_id, name='add_category_id'),
     path('delete_category_id', views.delete_category_id, name='delete_category_id'),
+    path('edit_category', views.edit_category, name='edit_category'),
+    re_path(r'^.*$', lambda request: redirect('index')),
 ]

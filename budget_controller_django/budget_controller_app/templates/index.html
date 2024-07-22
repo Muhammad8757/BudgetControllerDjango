@@ -30,6 +30,49 @@
 </div>
 
 
+
+
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editCategoryModalLabel">Изменения категории</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editCategoryForm" action="#" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="editCategory">Категория</label>
+            <select class="form-control" id="editCategory" name="category">
+              <option value="">Выберите категорию</option>
+              <!-- Добавьте другие категории по мере необходимости -->
+            </select>
+            <p id="categoryMessage" style="color: red; display: none;"></p>
+          </div>
+          <div class="fFrm-group">
+            <label for="editcategoryName">Название категории:</label>
+            <input type="text" class="form-control" id="editcategoryName" name="editcategoryName" required>
+            <div id="editCategoryError" class="text-danger" style="display:none;">Название категории не должно быть пустым.</div>
+          </div>
+          <div id="deleteCategoryMessage" class="alert" style="display:none;"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary" id="editCategoryModalId">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
 <header>
   <!-- Fixed navbar -->
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -44,7 +87,7 @@
             <a class="nav-link active" aria-current="page" href="/">Главная</a>
           </li>
           <li class="nav-item">
-            <a href='{% url "add_transaction" %}' class="nav-link" data-bs-toggle="modal" 
+            <a href="#" class="nav-link" data-bs-toggle="modal" 
             data-bs-target="#addTransactionModal">Добавить</a>
           </li>
         </ul>
@@ -73,12 +116,13 @@
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Добавить категорию</a></li>
               <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">Удалить категорию</a></li>
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editCategoryModal">Изменить категорию</a></li>
             </ul>
           </li>
           <form class="d-flex ms-2" action='{% url "search_description" %}' method="GET">
-            <input class="form-control me-2" type="search" name="q" placeholder="Поиск..." aria-label="Search" pattern=".{2,}" title="Введите как минимум два символа">
+            <input class="form-control me-2" type="search" name="q" placeholder="Поиск..." aria-label="Search" pattern=".{2,}" title="Введите как минимум два символа" required>
             <button class="btn btn-outline-success" type="submit">Поиск</button>
-          </form>
+        </form>        
           <div class="d-flex align-items-center ms-3">
             <img src="{% static 'images/profile.png' %}" data-bs-toggle="modal" data-bs-target="#aboutModal" alt="Profile" class="profile-icon dropdown-toggle" id="user" style="cursor: pointer;">
           </div>
@@ -150,26 +194,24 @@
 
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="aboutModalLabel">О Себе</h5>
-              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          <div class="modal-body aboutuser">
-              <div class="aboutuser">
-                  <h5 class="modal-title">Имя: {{ user_name }}</h5>
-                  <h5 class="modal-title">Логин: {{ phone_number }}</h5>
-                  <h5><hr class="dropdown-divider"></h5>
-                  <h5 class="modal-title"><a class="nav-link p-0 d-inline" href="{% url 'logout' %}" style="color: #212530;">Выход</a></h5>
-              </div>
-          </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="aboutModalLabel">О Себе</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <div class="modal-body aboutuser">
+        <div class="aboutuser">
+          <h5 class="modal-title">Имя: {{ user_name }}</h5>
+          <h5 class="modal-title">Логин: {{ phone_number }}</h5>
+          <h5><hr class="dropdown-divider"></h5>
+          <button id="logout_user" class="btn btn-danger" onclick="logoutUser()">Выход</button> <!-- Изменил id на logout_user -->
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-
 
 
   <div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog" aria-labelledby="addTransactionModalLabel" aria-hidden="true">
@@ -182,7 +224,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addTransactionForm" action="{% url 'add_transaction' %}" method="post">
+                <form id="addTransactionForm">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="transactionType">Тип</label>
@@ -213,6 +255,10 @@
         </div>
     </div>
 </div>
+
+
+
+
 
 
 <!-- Begin page content -->
@@ -356,18 +402,4 @@
 </div>
 
 
-
-
-<script>
-  var getHistoryUrl = "{% url 'get_history' %}";
-  var getBalanceUrl = "{% url 'get_balance' %}";
-  var aboutUserUrl = "{% url 'about_user' %}";
-  var getCategoryUrl ="{% url 'get_category' %}";
-  var getHistoryUrljson ="{% url 'get_categoriesjson' %}";
-  var addCategoryid = "{% url 'add_category_id' %}";
-  var delete_category_id = "{% url 'delete_category_id' %}";
-  var delete_transaction = "{% url 'delete_transaction' %}?id=";
-</script>
-
-{% include 'footer.html' %}
 {% endblock %}
