@@ -61,3 +61,6 @@ height: auto;
   margin-bottom: 1rem; /* Отступ между уведомлениями */
   border-radius: .25rem; /* Закругляем углы */
 }
+.form-text.text-danger {
+  color: red;
+}

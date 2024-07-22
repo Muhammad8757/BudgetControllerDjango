@@ -96,7 +96,7 @@ $(document).ready(function() {
     });
 
 
-    function loadCategory() {
+    function loadCategoryTransaction() {
         fetch("get_category")
             .then(response => response.text())
             .then(html => {
@@ -111,6 +111,10 @@ $(document).ready(function() {
 
     document.getElementById('transactionCategory').addEventListener('click', function() {
         loadCategory();
+    });
+
+    document.getElementById('editTransactionCategory').addEventListener('click', function() {
+        loadCategoryTransaction();
     });
 
     function addCategoryid(categoryName) {
@@ -276,15 +280,16 @@ document.addEventListener('DOMContentLoaded', function() {
             categoryError.style.display = 'none';
         }
     });
-
-    // Закрытие модального окна
-    
     
     // Обработчик для кнопки редактирования категории
     if (editCategoryButton) {
         editCategoryButton.addEventListener('click', function(event) {
             event.preventDefault();
             $('#editCategoryModal').modal('hide');
+            setTimeout(function() {
+                window.location.href = "/"
+            }, 1500); // 5000 миллисекунд = 5 секунд
+            
             const selectedOption = transactionCategorySelect.options[transactionCategorySelect.selectedIndex];
             const selectedId = selectedOption.value;
             const new_name = categoryNameInput.value;
@@ -388,6 +393,37 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCategories();
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const editTransactionCategory = document.getElementById('editTransactionCategory');
+    
+    function loadCategories() {
+        fetch("get_categoriesjson")  // URL для получения категорий
+            .then(response => response.json())
+            .then(data => {
+                // Очистить текущие опции в select
+                editTransactionCategory.innerHTML = '';
+
+                // Добавить первую опцию
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Выберите категорию';
+                editTransactionCategory.appendChild(defaultOption);
+
+                // Добавить остальные категории
+                data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    editTransactionCategory.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Ошибка загрузки категорий:', error));
+    }
+
+    // Вызвать функцию загрузки категорий при загрузке страницы
+    loadCategories();
+
+});
 
 // Функция для загрузки данных транзакции в модальное окно редактирования
 // Функция для загрузки данных транзакции в модальное окно редактирования
@@ -723,7 +759,7 @@ function create_transaction(amount, type, categoryId, description) {
 
 // Добавляем обработчик событий для кнопки с id saveTransactionBtn
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('saveTransactionBtn').addEventListener('click', function(event) {
+    document.getElementById('addTransactionForm').addEventListener('submit', function(event) {
         event.preventDefault();  
         // Получаем значения из формы
         var amount = document.getElementById('transactionAmount').value;
@@ -746,16 +782,25 @@ document.addEventListener('DOMContentLoaded', function() {
             showErrorUnderField('transactionAmount', 'Введите корректную сумму');
             isValid = false;
         }
-
         // Если все проверки прошли успешно, вызываем функцию create_transaction
         if (isValid) {
             create_transaction(amount, type, categoryId, description);
         }
-
-        $('#addTransactionModal').on('hide.bs.modal', function (e) {
-            clearModalErrors();  // Очищаем ошибки при закрытии модального окна
-        });
     });
+});
+
+document.getElementById('editTransactionForm').addEventListener('submit', function(event) {
+    var amountInput = document.getElementById('editTransactionAmount');
+    var amountValue = amountInput.value;
+    var amountError = document.getElementById('amountError');
+    var amountRegex = /^\d+(\.\d{1,2})?$/;
+
+    if (!amountRegex.test(amountValue)) {
+        amountError.style.display = 'block';
+        event.preventDefault();
+    } else {
+        amountError.style.display = 'none';
+    }
 });
 
 

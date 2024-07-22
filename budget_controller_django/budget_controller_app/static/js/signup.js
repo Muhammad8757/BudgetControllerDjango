@@ -40,7 +40,8 @@ function showToastFromUrlParams() {
     if (toastType === 'unauthorized') {
         createToast('Вы не зарегистрированы. Пожалуйста, войдите в систему.', 'danger');
     } else if (toastType === 'user_exist') {
-        createToast('Неправильный пароль или телефонный номер.', 'danger');
+        createToast('Пользователь с таким номером уже зарегистрирован.', 'danger');
+        console.log('Пользователь с таким номером уже зарегистрирован')
     } else if (toastType === 'success') {
         createToast('Регистрация прошла успешно!', 'success');
     }
