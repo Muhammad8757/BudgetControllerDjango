@@ -443,7 +443,7 @@ function loadTransactionData(id, amount, type, categoryId, description) {
         outgoing: 0
     }
     var currentTypeValue = $('#editTransactionType').val(); // Получаем текущее значение
-    var transactionTypeValue = (type.trim() === currentTypeValue) ? '1' : '0'; // Определяем новое значение
+    var transactionTypeValue = (type.trim() === currentTypeValue) ? 1 : 0; // Определяем новое значение
     $('#editTransactionType').val(transactionTypeValue); 
     console.log("Setting transaction type:", transactionTypeValue);
 

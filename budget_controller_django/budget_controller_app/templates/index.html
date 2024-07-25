@@ -321,7 +321,7 @@
             <td>{{ transaction.description }}</td>
             <td>
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTransactionModal"
-                onclick="loadTransactionData('{{ transaction.id }}', '{{ transaction.amount }}', '{{ transaction.type|escapejs }}', '{{ transaction.category.id }}', '{{ transaction.description|escapejs }}')">
+                onclick="loadTransactionData('{{ transaction.id }}', '{{ transaction.amount }}', '{{ transaction.typ }}', '{{ transaction.category.id }}', '{{ transaction.description|escapejs }}')">
               Изменить
               </button>
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setTransactionId('{{ transaction.id }}'); loadAmountData('{{ transaction.amount }}')">Удалить</button>

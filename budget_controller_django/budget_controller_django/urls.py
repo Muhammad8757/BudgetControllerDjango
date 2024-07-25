@@ -16,7 +16,6 @@ urlpatterns = [
     path("search_description",views.search_description, name='search_description'),
     path("edit_transaction",views.edit_transaction, name='edit_transaction'),
     path("delete_transaction",views.delete_transaction, name='delete_transaction'),
-    path('api/get_transactions_count', views.get_transactions_count, name='api/get_transactions_count'),
     path('sorted_by_amount', views.sorted_by_amount, name='sorted_by_amount'),
     path('sorted_by_type', views.sorted_by_type, name='sorted_by_type'),
     path('sorted_by_category', views.sorted_by_category, name='sorted_by_category'),

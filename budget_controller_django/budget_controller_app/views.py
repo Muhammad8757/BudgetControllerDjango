@@ -1,6 +1,5 @@
 from django.urls import reverse
 from datetime import datetime
-import hashlib
 import json
 from django.contrib import messages
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
@@ -9,26 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import User, UserTransaction, Category
 from django.db.models import Q
 from django.views.decorators.http import require_http_methods
-
-def hasher(password) -> str:
-    return hashlib.md5(str(password).encode()).hexdigest()
-
-
-def check_user(request):
-    user = get_user_from_session(request)
-    if user is None:
-        login_url = reverse('login')
-        return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
-    return None
-
-
-def get_user_from_session(request):
-    phone_number = request.session.get('phone_number')
-    password = request.session.get('password')
-    if phone_number and password:
-        return User.objects.filter(phone_number=phone_number, password=password).first()
-    return None
-
+from .functions import get_user_from_session, hasher
 
 def sign_up(request) -> HttpResponse:
     if request.method == "POST":
@@ -49,7 +29,7 @@ def sign_up(request) -> HttpResponse:
         categories = ["Медицина", "Транспорт", "Еда и напитки", "Образование", "Другое"]
         for category in categories:
             add_category_id(request, id=user, name=category)
-
+        return redirect('index')
     return render(request, "sign_up.html")
 
 def login(request):
@@ -85,32 +65,25 @@ def get_history(request):
 def add_transaction(request):
     if request.method == "POST":
         user = get_user_from_session(request)
-        if user:
-            try:
-                data = json.loads(request.body)
-                amount = float(data.get("amount", 0))
-                type_transaction = int(data.get("type", None))
-                description = data.get("description")
-                category_id = data.get("categoryId")
-                
-                category = get_object_or_404(Category, pk=category_id) if category_id else None
-                UserTransaction.objects.create(
-                    amount=amount, date=datetime.now().replace(second=0, microsecond=0),
-                    description=description, type=type_transaction, category=category, user=user
-                )
-                return JsonResponse({"message": "Транзакция успешно добавлена."}, status=200)
-            except (json.JSONDecodeError, ValueError, TypeError) as e:
-                print(e)
-                return JsonResponse({"error": "Некорректные данные."}, status=400)
-        else:
-            # Перенаправление на страницу входа с параметром
-            login_url = reverse('login')
-            return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
-    
+        try:
+            data = json.loads(request.body)
+            amount = float(data.get("amount", 0))
+            type_transaction = int(data.get("type", None))
+            description = data.get("description")
+            category_id = data.get("categoryId")
+            
+            category = get_object_or_404(Category, pk=category_id) if category_id else None
+            UserTransaction.objects.create(
+                amount=amount, date=datetime.now().replace(second=0, microsecond=0),
+                description=description, type=type_transaction, category=category, user=user
+            )
+            return JsonResponse({"message": "Транзакция успешно добавлена."}, status=200)
+        except (json.JSONDecodeError, ValueError, TypeError) as e:
+            print(e)
+            return JsonResponse({"error": "Некорректные данные."}, status=400)
     # В случае GET-запросов перенаправляем на страницу входа
     login_url = reverse('login')
     return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
-
 
 
 def filter_by_category(request):
@@ -154,14 +127,6 @@ def logout_view(request):
         if not request.path.startswith(login_url) and not request.path.startswith(reverse('sign_up')):
             return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
         return HttpResponse(status=200)
-    
-def get_transactions_count(request):
-    user = get_user_from_session(request)
-    if user:
-        id_category = request.GET.get('category')
-        transactions = UserTransaction.objects.filter(user=user, category_id=id_category)
-        return JsonResponse({'count': transactions.count()})
-    return JsonResponse({'error': 'Session data not found'}, status=400)
 
 @require_http_methods(["DELETE"])
 def delete_transaction(request):
@@ -240,7 +205,6 @@ def get_balance(request):
         sum_one = sum(item.amount for item in user_transactions if item.type == 1)
         total_sum = sum_one - sum_zero
 
-        # Ограничение до 5 знаков после точки
         if total_sum == 0:
             formatted_balance = "0"
         else:
@@ -249,7 +213,6 @@ def get_balance(request):
         return render(request, "index.html", {"balance": formatted_balance})
     login_url = reverse('login')
     return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
-
 
 def get_category(request):
     phone_number = request.session.get('phone_number')
@@ -267,18 +230,9 @@ def get_category(request):
 def get_categoriesjson(request):
     phone_number = request.session.get('phone_number')
     password = request.session.get('password')
-    
-    # Проверка наличия данных пользователя в сессии
-    if not phone_number or not password:
-        return redirect("login")
 
-    # Проверка пользователя в базе данных
     user = User.objects.filter(phone_number=phone_number, password=password).first()
-    if user is None:
-        login_url = reverse('login')
-        return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
 
-    # Получение всех категорий пользователя
     categories = Category.objects.filter(Q(created_category_by=user) | Q(created_category_by=None))
 
     # Преобразование QuerySet в список словарей для JsonResponse
@@ -293,10 +247,8 @@ def add_category_id(request, id=None, name=None):
         name = request.POST.get('categoryName')
         Category.objects.create(name=name, created_category_by=user)
     elif id is not None and name is not None:
-        # Предполагается, что id здесь должен быть идентификатор пользователя
-        # Проверьте, если категория с таким ID существует
         Category.objects.create(name=name, created_category_by=id)
-    return HttpResponseRedirect(reverse('index'))  # Перенаправление на главную страницу или другую страницу
+    return HttpResponseRedirect(reverse('index'))
 
 
 def delete_category_id(request):
@@ -314,8 +266,6 @@ def delete_category_id(request):
     else:
         login_url = reverse('login')
         return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
-
-
 
 def edit_category(request):
     if request.method == 'POST':
