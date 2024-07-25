@@ -321,10 +321,10 @@
             <td>{{ transaction.description }}</td>
             <td>
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTransactionModal"
-                onclick="loadTransactionData('{{ transaction.id }}', '{{ transaction.amount }}', '{{ transaction.type }}', '{{ transaction.category.id }}', '{{ transaction.description }}')">
-                Изменить
+                onclick="loadTransactionData('{{ transaction.id }}', '{{ transaction.amount }}', '{{ transaction.type|escapejs }}', '{{ transaction.category.id }}', '{{ transaction.description|escapejs }}')">
+              Изменить
               </button>
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setTransactionId('{{ transaction.id }}')">Удалить</button>
+              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setTransactionId('{{ transaction.id }}'); loadAmountData('{{ transaction.amount }}')">Удалить</button>
             </td>
           </tr>
           {% endwith %}
@@ -340,7 +340,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления транзакции №<span id="transactionIdDisplay"></span></h5>
+        <h6 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления транзакции на сумму: <span id="transactionAmountDisplay"></span></h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -363,7 +363,8 @@
       <div class="modal-content">
           <div class="modal-header">
               <h5 class="modal-title" id="editTransactionModalLabel">Изменить транзакцию</h5>
-              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title"  style="margin-left: 5px;">на сумму: <span id="transactionAmountDisplayValue"></span></h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
               </button>
           </div>

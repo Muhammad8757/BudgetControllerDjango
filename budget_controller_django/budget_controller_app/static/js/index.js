@@ -432,27 +432,46 @@ function loadTransactionData(id, amount, type, categoryId, description) {
     document.getElementById("editTransactionAmount").value = amount;
     document.getElementById("editTransactionCategory").value = categoryId;
     document.getElementById("editTransactionDescription").value = description;
+    document.getElementById("transactionAmountDisplayValue").textContent = amount;
+
+    // Отладочное логирование
+    console.log("Transaction type received:", type);
 
     // Установка значения типа транзакции
-    if (type === 'Доход') {
-        $('#editTransactionType').val('1'); // Устанавливаем значение '1' для Дохода
-    } else {
-        $('#editTransactionType').val('0'); // Устанавливаем значение '0' для Расхода
+    let action = {
+        income: 1,
+        outgoing: 0
     }
+    var currentTypeValue = $('#editTransactionType').val(); // Получаем текущее значение
+    var transactionTypeValue = (type.trim() === currentTypeValue) ? '1' : '0'; // Определяем новое значение
+    $('#editTransactionType').val(transactionTypeValue); 
+    console.log("Setting transaction type:", transactionTypeValue);
+
+    // Проверка текущего значения после установки
+    console.log("Current value of #editTransactionType:", $('#editTransactionType').val());
+
     console.log("Loading transaction data:", id, amount, type, categoryId, description);
 }
 
-// При клике на кнопку "Изменить" загружаем данные транзакции в модальное окно редактирования
 $(document).on("click", ".editTransactionModal", function () {
     var transactionId = $(this).data('transaction-id');
     var amount = $(this).data('amount');
-    var type = $(this).data('transaction-type'); // Предположим, что у вас есть атрибут data-transaction-type для определения типа транзакции
+    var type = $(this).data('transaction-type'); // Должен быть строкой
     var categoryId = $(this).data('category-id');
     var description = $(this).data('description');
 
     loadTransactionData(transactionId, amount, type, categoryId, description);
 });
 
+function loadAmountData(amount) {
+    document.getElementById("transactionAmountDisplay").textContent = amount;
+}
+
+$(document).on("click", ".confirmDeleteModal", function () {
+    var amount = $(this).data('amount');
+    console.log(amount)
+    loadAmountData(amount)
+});
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -567,7 +586,7 @@ let deleteTransactionId = null;
 
 function setTransactionId(transactionId) {
   deleteTransactionId = transactionId;
-  document.getElementById('transactionIdDisplay').innerText = transactionId;
+  
 }
 
 document.getElementById('deleteTransactionBtn').addEventListener('click', function() {
