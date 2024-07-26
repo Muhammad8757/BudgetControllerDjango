@@ -16,7 +16,7 @@ def sign_up(request) -> HttpResponse:
         phone_number = request.POST.get("phone_number", 1)
         password = request.POST.get("password", "Undefined")
         password_hash = hasher(password)
-
+        
         existing_user = User.objects.filter(phone_number=phone_number).first()
         if existing_user:
             sign_up = reverse('sign_up')
@@ -34,12 +34,13 @@ def sign_up(request) -> HttpResponse:
 
 def login(request):
     if request.method == "POST":
+        """Нужно уменьшить код. Много повторения"""
         phone_number = request.POST.get("phone_number")
         password = request.POST.get("password")
         password_hash = hasher(password)
 
         user = User.objects.filter(phone_number=phone_number, password=password_hash).first()
-        
+        """Нужно уменьшить код. Много повторения"""
         if user:
             request.session['phone_number'] = phone_number
             request.session['password'] = password_hash
@@ -55,11 +56,13 @@ def login(request):
 
 
 def get_history(request):
+    """Пользователь используется только один раз."""
     user = request.user
     history = UserTransaction.objects.filter(user=user).order_by('-date')
     return render(request, "index.html", {'history': history})
 
 def add_transaction(request):
+    
     if request.method == "POST":
         user = request.user
         try:
@@ -99,6 +102,7 @@ def about_user(request):
     return render(request, "index.html", context)
 
 def search_description(request):
+    """Иногда, лучше всего использовать request.user, чем user = request.user и потом ...=user"""
     user = request.user
     query = request.GET.get('q')
     if query:
@@ -126,6 +130,7 @@ def logout_view(request):
 
 @require_http_methods(["DELETE"])
 def delete_transaction(request):
+    """Много повторений кода. Нужен единый метод, через который будешь получать объект любой модели"""
     try:
         transaction_id = request.GET.get('id')
         user = request.user
@@ -146,6 +151,7 @@ def clear_delete_message(request):
     return JsonResponse({'status': 'success'})
 
 def edit_transaction(request):
+    """Маппинга нет, очень много функционала в одной функции, simple responsibility 0, повтор кода"""
     if request.method == "POST":
         try:
             transaction_id = request.POST.get('id')
@@ -171,6 +177,7 @@ def edit_transaction(request):
     return redirect('index')
 
 def sorted_transactions(request, sort_field):
+    """Можно напрямую использовать request.user, если пользователь нужен только пару раз"""
     user = request.user
     sort_order = request.session.get('sort_order', 'desc')
     order = f'-{sort_field}' if sort_order == 'desc' else sort_field
@@ -194,6 +201,7 @@ def sorted_by_description(request):
     return sorted_transactions(request, 'description')
 
 def get_balance(request):
+    """Опять же, нужен единый метод для получения объектов. """
     user = request.user
     if user:
         user_transactions = UserTransaction.objects.filter(user=user)
@@ -211,6 +219,8 @@ def get_balance(request):
     return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
 
 def get_category(request):
+    """Объект request тут не нужен. Это лишняя трата памяти и перфоманса,
+    объекты получать через один метод"""
     user_data = dict_to_obj(request.session, ['phone_number', 'password'])
 
     user = User.objects.get(phone_number = user_data.phone_number, password=user_data.password)
@@ -218,6 +228,9 @@ def get_category(request):
     return render(request, "index.html", {"categories": categories})
 
 def get_categoriesjson(request):
+    """Пользователь находится в request.user, зачем его заново запрашивать с бд?
+    user_data в этом кейса бесполезен, категории брать при помощи единого метода для изъятия с бд"""
+
     user_data = dict_to_obj(request.session, ['phone_number', 'password'])
 
     user = User.objects.filter(phone_number=user_data.phone_number, password=user_data.password).first()
@@ -229,6 +242,7 @@ def get_categoriesjson(request):
     return JsonResponse(categories_list, safe=False)
 
 def add_category_id(request, id=None, name=None):
+    """Пользователь используется только раз"""
     user = request.user
     if id is None and name is None:
         name = request.POST.get('categoryName')
@@ -238,6 +252,8 @@ def add_category_id(request, id=None, name=None):
     return HttpResponseRedirect(reverse('index'))
 
 def delete_category_id(request):
+    """Авторизирован ли пользователь, нужно проверять через user.is_authenticated.
+    Его тоже нужно в ручную, один метод делают слишком много вещей"""
     user = request.user
     if user:
         id = request.POST.get('category')
@@ -254,6 +270,7 @@ def delete_category_id(request):
         return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
 
 def edit_category(request):
+    """Получать объекты через единый метод"""
     if request.method == 'POST':
         data = json.loads(request.body)
         category_name = data.get("editcategoryName", "")
@@ -269,3 +286,7 @@ def edit_category(request):
         else:
             return JsonResponse({'success': False, 'error': 'Недостаточно данных'})
     return redirect('index')
+
+
+
+"""Обобщить ошибки через новый middleware!!!!!!"""
