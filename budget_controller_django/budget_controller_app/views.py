@@ -38,17 +38,14 @@ def login(request):
         password = request.POST.get("password")
         password_hash = hasher(password)
 
-        # Попытка найти пользователя в базе данных
         user = User.objects.filter(phone_number=phone_number, password=password_hash).first()
         
         if user:
-            # Сохранение данных пользователя в сессии
             request.session['phone_number'] = phone_number
             request.session['password'] = password_hash
             messages.success(request, "Вы успешно вошли в аккаунт.")
             return redirect('index')
         
-        # Ошибка при неверных учетных данных
         messages.error(request, "Неверный номер телефона или пароль. Попробуйте снова.")
         
         login_url = reverse('login')
@@ -81,7 +78,6 @@ def add_transaction(request):
         except (json.JSONDecodeError, ValueError, TypeError) as e:
             print(e)
             return JsonResponse({"error": "Некорректные данные."}, status=400)
-    # В случае GET-запросов перенаправляем на страницу входа
     login_url = reverse('login')
     return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
 
@@ -123,7 +119,7 @@ def logout_view(request):
         return JsonResponse({'message': 'Вы вышли из системы'}, status=200)
     else:
         login_url = reverse('login')
-        # Избегаем перенаправления на страницу входа, если уже на странице входа или регистрации
+        # избегаем перенаправления на страницу входа, если уже на странице входа или регистрации
         if not request.path.startswith(login_url) and not request.path.startswith(reverse('sign_up')):
             return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
         return HttpResponse(status=200)
@@ -223,7 +219,6 @@ def get_category(request):
         login_url = reverse('login')
         return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
 
-    # Используйте filter для получения всех категорий пользователя
     categories = Category.objects.filter(Q(created_category_by=user) | Q(created_category_by=None))
     return render(request, "index.html", {"categories": categories})
 
@@ -235,11 +230,9 @@ def get_categoriesjson(request):
 
     categories = Category.objects.filter(Q(created_category_by=user) | Q(created_category_by=None))
 
-    # Преобразование QuerySet в список словарей для JsonResponse
     categories_list = list(categories.values())
 
     return JsonResponse(categories_list, safe=False)
-
 
 def add_category_id(request, id=None, name=None):
     user = get_user_from_session(request)
@@ -249,7 +242,6 @@ def add_category_id(request, id=None, name=None):
     elif id is not None and name is not None:
         Category.objects.create(name=name, created_category_by=id)
     return HttpResponseRedirect(reverse('index'))
-
 
 def delete_category_id(request):
     user = get_user_from_session(request)
