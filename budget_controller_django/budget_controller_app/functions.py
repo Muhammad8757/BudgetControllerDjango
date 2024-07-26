@@ -21,3 +21,16 @@ def check_user(request):
         login_url = reverse('login')
         return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
     return None
+
+def parse(model: models, **kwargs):
+    return model.objects.get(**kwargs)
+
+class SimpleObject:
+    pass
+
+def dict_to_obj(data: dict, keys: list):
+    obj = SimpleObject()
+    for key in keys:
+        if key in data:
+            setattr(obj, key, data[key])
+    return obj

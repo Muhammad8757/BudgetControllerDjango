@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import User, UserTransaction, Category
 from django.db.models import Q
 from django.views.decorators.http import require_http_methods
-from .functions import get_user_from_session, hasher
+from .functions import dict_to_obj, hasher
 
 def sign_up(request) -> HttpResponse:
     if request.method == "POST":
@@ -55,13 +55,13 @@ def login(request):
 
 
 def get_history(request):
-    user = get_user_from_session(request)
+    user = request.user
     history = UserTransaction.objects.filter(user=user).order_by('-date')
     return render(request, "index.html", {'history': history})
 
 def add_transaction(request):
     if request.method == "POST":
-        user = get_user_from_session(request)
+        user = request.user
         try:
             data = json.loads(request.body)
             amount = float(data.get("amount", 0))
@@ -85,7 +85,7 @@ def add_transaction(request):
 def filter_by_category(request):
     try:
         choosen_category = request.GET.get("id")
-        user = get_user_from_session(request)
+        user = request.user
         if user:
             filter_by_category_result = UserTransaction.objects.filter(user=user, category_id=choosen_category)
             return render(request, 'index.html', {'history': filter_by_category_result})
@@ -94,12 +94,12 @@ def filter_by_category(request):
         return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
 
 def about_user(request):
-    user = get_user_from_session(request)
+    user = request.user
     context = {'user_name': user.name, 'phone_number': user.phone_number}
     return render(request, "index.html", context)
 
 def search_description(request):
-    user = get_user_from_session(request)
+    user = request.user
     query = request.GET.get('q')
     if query:
         results = UserTransaction.objects.filter(
@@ -128,7 +128,7 @@ def logout_view(request):
 def delete_transaction(request):
     try:
         transaction_id = request.GET.get('id')
-        user = get_user_from_session(request)
+        user = request.user
         if user:
             transaction = UserTransaction.objects.get(user=user, id=transaction_id)
             transaction.delete()
@@ -153,7 +153,7 @@ def edit_transaction(request):
             type_transaction = int(request.POST.get("type", 0))
             description = request.POST.get("description")
             category_id = request.POST.get("category")
-            user = get_user_from_session(request)
+            user = request.user
             transaction = UserTransaction.objects.filter(user=user, id=transaction_id).first()
             if transaction:
                 if category_id:
@@ -171,7 +171,7 @@ def edit_transaction(request):
     return redirect('index')
 
 def sorted_transactions(request, sort_field):
-    user = get_user_from_session(request)
+    user = request.user
     sort_order = request.session.get('sort_order', 'desc')
     order = f'-{sort_field}' if sort_order == 'desc' else sort_field
     transactions = UserTransaction.objects.filter(user=user).order_by(order)
@@ -194,7 +194,7 @@ def sorted_by_description(request):
     return sorted_transactions(request, 'description')
 
 def get_balance(request):
-    user = get_user_from_session(request)
+    user = request.user
     if user:
         user_transactions = UserTransaction.objects.filter(user=user)
         sum_zero = sum(item.amount for item in user_transactions if item.type == 0)
@@ -211,22 +211,16 @@ def get_balance(request):
     return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
 
 def get_category(request):
-    phone_number = request.session.get('phone_number')
-    password = request.session.get('password')
-    user = User.objects.filter(phone_number=phone_number, password=password).first()
+    user_data = dict_to_obj(request.session, ['phone_number', 'password'])
 
-    if user is None:
-        login_url = reverse('login')
-        return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
-
+    user = User.objects.get(phone_number = user_data.phone_number, password=user_data.password)
     categories = Category.objects.filter(Q(created_category_by=user) | Q(created_category_by=None))
     return render(request, "index.html", {"categories": categories})
 
 def get_categoriesjson(request):
-    phone_number = request.session.get('phone_number')
-    password = request.session.get('password')
+    user_data = dict_to_obj(request.session, ['phone_number', 'password'])
 
-    user = User.objects.filter(phone_number=phone_number, password=password).first()
+    user = User.objects.filter(phone_number=user_data.phone_number, password=user_data.password).first()
 
     categories = Category.objects.filter(Q(created_category_by=user) | Q(created_category_by=None))
 
@@ -235,7 +229,7 @@ def get_categoriesjson(request):
     return JsonResponse(categories_list, safe=False)
 
 def add_category_id(request, id=None, name=None):
-    user = get_user_from_session(request)
+    user = request.user
     if id is None and name is None:
         name = request.POST.get('categoryName')
         Category.objects.create(name=name, created_category_by=user)
@@ -244,7 +238,7 @@ def add_category_id(request, id=None, name=None):
     return HttpResponseRedirect(reverse('index'))
 
 def delete_category_id(request):
-    user = get_user_from_session(request)
+    user = request.user
     if user:
         id = request.POST.get('category')
 

@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from .views import get_user_from_session
+from .functions import get_user_from_session
 
 class Middleware:
     def __init__(self, get_response):
@@ -10,6 +10,7 @@ class Middleware:
     def __call__(self, request):
         url = request.path
 
+        request.user = get_user_from_session(request)
         if not url.startswith('/login') and not url.startswith('/sign_up'):
             user = get_user_from_session(request)
             if user is None:
