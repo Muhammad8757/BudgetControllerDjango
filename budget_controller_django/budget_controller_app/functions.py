@@ -1,5 +1,5 @@
 import hashlib
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from .models import models
@@ -22,7 +22,7 @@ def check_user(request):
         return HttpResponseRedirect(f"{login_url}?toast=unauthorized")
     return None
 
-def parse(model: models, **kwargs):
+def get_model(model: models, **kwargs):
     return model.objects.get(**kwargs)
 
 class SimpleObject:
@@ -34,3 +34,12 @@ def dict_to_obj(data: dict, keys: list):
         if key in data:
             setattr(obj, key, data[key])
     return obj
+
+def get_models(model: models.Model, filter: dict, exception_message=None, redirect_url=None):
+    try:
+        return model.objects.get(**filter)
+    except model.DoesNotExist:
+        if redirect_url:
+            return HttpResponseRedirect(f"{redirect_url}?error={exception_message}")
+        else:
+            raise Http404(exception_message if exception_message else "Model does not exist")

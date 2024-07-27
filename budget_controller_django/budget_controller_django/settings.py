@@ -36,7 +36,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'budget_controller_app.middleware.Middleware'
+    'budget_controller_app.middleware.Middleware',
+    'budget_controller_app.error_middleware.Error_Middleware',
 ]
 
 ROOT_URLCONF = 'budget_controller_django.urls'

@@ -1,4 +1,3 @@
-from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from .functions import get_user_from_session
@@ -24,3 +23,4 @@ class Middleware:
 
         response = self.get_response(request)
         return response
+
